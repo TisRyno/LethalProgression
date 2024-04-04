@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/TisRyno/LethalProgression/compare/v1.5.1...v1.5.2) (2024-04-04)
+
+
+### Bug Fixes
+
+* dll output dir ([ece3f83](https://github.com/TisRyno/LethalProgression/commit/ece3f836b61100ca188aa9389d5f332bf46384f1))
+
 ## [1.5.1](https://github.com/TisRyno/LethalProgression/compare/v1.5.0...v1.5.1) (2024-04-04)
 
 
