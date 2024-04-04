@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/TisRyno/LethalProgression/compare/v1.4.1...v1.5.0) (2024-04-04)
+
+
+### Features
+
+* v1.4.2 ([a8c7c40](https://github.com/TisRyno/LethalProgression/commit/a8c7c406d8e2dad3850656b53e80dbc374a865d7))
+
 ## 1.0.0
 + Initial release
 
