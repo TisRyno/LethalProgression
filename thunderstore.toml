@@ -17,7 +17,7 @@ BepInEx-BepInExPack = "5.4.2100"
 
 [build]
 icon = "Thunderstore/icon.png"
-readme = "Thunderstore/README.md"
+readme = "README.md"
 outdir = "build"
 
 [[build.copy]]
@@ -25,7 +25,7 @@ source = "LethalProgression/bin/LethalProgression.dll"
 target = "BepInEx/plugins/LethalProgression.dll"
 
 [[build.copy]]
-source = "Thunderstore/CHANGELOG.md"
+source = "CHANGELOG.md"
 target = "CHANGELOG.md"
 
 [publish]
