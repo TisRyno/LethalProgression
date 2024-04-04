@@ -1,6 +1,7 @@
 /.idea/
 /.vscode
 /.vs/
+.DS_STORE
 packages
 Releases
 **/bin
