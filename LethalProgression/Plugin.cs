@@ -17,7 +17,7 @@ namespace LethalProgression
     {
         private const string modGUID = "Stoneman.LethalProgression";
         private const string modName = "Lethal Progression";
-        private const string modVersion = "1.4.2";
+        private const string modVersion = "1.5.0";
         private const string modAuthor = "Stoneman";
         public static AssetBundle skillBundle;
 
