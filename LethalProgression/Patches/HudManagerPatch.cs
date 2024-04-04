@@ -133,7 +133,7 @@ namespace LethalProgression.Patches
         private static void MakeBar()
         {
             QuickMenuManagerPatch.MakeNewXPBar();
-            GameObject _xpBar = GameObject.Find("/Systems/UI/Canvas/QuickMenu/XPBar");
+            GameObject _xpBar = GameObject.Find("/Systems/UI/Canvas/QuickMenu/XpInfoContainer/XPBar");
             _tempBar = GameObject.Instantiate(_xpBar);
             _tempBar.name = "XPUpdate";
 
