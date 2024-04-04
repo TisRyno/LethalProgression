@@ -11,6 +11,7 @@ using UnityEngine;
 
 namespace LethalProgression
 {
+    [BepInDependency("ainavt.lc.lethalconfig")]
     [BepInPlugin(modGUID, modName, modVersion)]
     internal class LethalPlugin : BaseUnityPlugin
     {

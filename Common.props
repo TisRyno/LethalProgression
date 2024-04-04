@@ -20,7 +20,7 @@
         <!-- <AssemblyGameDir>$(GameDir)Lethal Company_Data\Managed\</AssemblyGameDir> -->
 
         <!-- Mac OSX -->
-        <GameDir>~/Projects/personal/FakeLethalInstance/</GameDir>
+        <GameDir>/Users/ryan/Projects/personal/FakeLethalInstance/</GameDir>
         <!-- Path of the game's plugin directory where the built plugin will be copied to -->
         <PluginGameDir>$(GameDir)BepInEx/plugins/</PluginGameDir>
         <BepInExCoreDir>$(GameDir)BepInEx/core/</BepInExCoreDir>
@@ -98,7 +98,7 @@
         <!-- List of BepInEx Core assembly to include as reference -->
         <DllNames Include="LethalConfig" />
 
-        <Reference Include="@(DllNames)" HintPath="$(PluginGameDir)%(Identity).dll"/>
+        <Reference Include="@(DllNames)" HintPath="..\Thunderstore\plugins\%(Identity).dll"/>
     </ItemGroup>
 
     <ItemGroup>
