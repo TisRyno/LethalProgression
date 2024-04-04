@@ -50,10 +50,11 @@ namespace LethalProgression.Patches
         [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.SendNewPlayerValuesClientRpc))]
         private static void PlayerLoadedXPHandler(StartOfRound __instance)
         {
-            ulong? steamID = SteamClient.SteamId;
-            LethalPlugin.Log.LogInfo($"Player {steamID} has joined the game.");
-            LP_NetworkManager.xpInstance.RequestSavedData_ServerRpc(steamID);
+            ulong steamID = SteamClient.SteamId;
 
+            LethalPlugin.Log.LogInfo($"Player {steamID} has joined the game.");
+
+            LP_NetworkManager.xpInstance.RequestSavedData_ServerRpc(steamID);
             LP_NetworkManager.xpInstance.guiObj.UpdateAllStats();
         }
 

@@ -372,7 +372,7 @@ namespace LethalProgression
 
         // Loading
         [ServerRpc(RequireOwnership = false)]
-        public void RequestSavedData_ServerRpc(ulong? steamID)
+        public void RequestSavedData_ServerRpc(ulong steamID)
         {
             string saveData = SaveManager.Load(steamID);
             SendSavedData_ClientRpc(saveData);
