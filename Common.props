@@ -94,7 +94,7 @@
         <Reference Include="@(DllNames)" HintPath="$(BepInExCoreDir)%(Identity).dll"/>
     </ItemGroup>
 
-    <ItemGroup Condition="$(CI) != 'true'">
+    <ItemGroup>
         <!-- List of BepInEx Core assembly to include as reference -->
         <DllNames Include="LethalConfig" />
 
