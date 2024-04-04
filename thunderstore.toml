@@ -22,7 +22,7 @@ outdir = "build"
 
 [[build.copy]]
 source = "LethalProgression/bin/LethalProgression.dll"
-target = "BepInEx/plugins/LethalProgression.dll"
+target = "LethalProgression.dll"
 
 [[build.copy]]
 source = "CHANGELOG.md"
