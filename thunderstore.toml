@@ -33,4 +33,4 @@ communities = ["lethal-company"]
 
 [publish.categories]
 # The categories are available at https://thunderstore.io near of the search bar
-lethal-company = ["bepinex", "mods", "misc", "server-side", "client-side"]
+lethal-company = ["bepinex", "mods", "misc", "serverside", "clientside"]
