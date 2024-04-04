@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/TisRyno/LethalProgression/compare/v1.5.0...v1.5.1) (2024-04-04)
+
+
+### Bug Fixes
+
+* thunderstore toml ([d9e30be](https://github.com/TisRyno/LethalProgression/commit/d9e30be906636e73aac370dec1a5977447258495))
+
 ## [1.5.0](https://github.com/TisRyno/LethalProgression/compare/v1.4.1...v1.5.0) (2024-04-04)
 
 
