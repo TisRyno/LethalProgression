@@ -23,7 +23,7 @@ jobs:
           thunderstore-client: false
 
       - name: Build
-        run: dotnet build
+        run: "dotnet build /r:./Thunderstore/plugins/LethalConfig.dll"
 
       - name: Test
         run: dotnet test
