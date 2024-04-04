@@ -1,0 +1,123 @@
+<Project>
+
+    <PropertyGroup>
+        <!-- Name of the team on Thunderstore -->
+        <!-- https://thunderstore.io/settings/teams -->
+        <RootNamespace>TisRyno</RootNamespace>
+        <AssemblyName>LethalProgression</AssemblyName>
+        <Description>Progression Mod</Description>
+        <!-- The plugin will be built in the bin directory -->
+        <OutputPath>bin</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <!-- Path of the game directory, should contain Lethal Company.exe -->
+        <!-- PROGRA~1 is the short path for Program Files -->
+        <!-- PROGRA~2 is the short path for Program Files (x86) -->
+        <!-- <GameDir>C:\PROGRA~2\Steam\steamapps\common\Lethal Company\</GameDir> -->
+        <!-- Path of the game's plugin directory where the built plugin will be copied to -->
+        <!-- <PluginGameDir>$(GameDir)BepInEx\plugins\</PluginGameDir> -->
+        <!-- <BepInExCoreDir>$(GameDir)BepInEx\core\</BepInExCoreDir> -->
+        <!-- Path of the game's managed directory where the game's dlls are located -->
+        <!-- <AssemblyGameDir>$(GameDir)Lethal Company_Data\Managed\</AssemblyGameDir> -->
+
+        <!-- Mac OSX -->
+        <GameDir>~/Projects/personal/FakeLethalInstance/</GameDir>
+        <!-- Path of the game's plugin directory where the built plugin will be copied to -->
+        <PluginGameDir>$(GameDir)BepInEx/plugins/</PluginGameDir>
+        <BepInExCoreDir>$(GameDir)BepInEx/core/</BepInExCoreDir>
+        <!-- Path of the game's managed directory where the game's dlls are located -->
+        <AssemblyGameDir>$(GameDir)Lethal Company_Data/Managed/</AssemblyGameDir>
+
+        <!-- Name of the game executable -->
+        <GameExe>Lethal Company.exe</GameExe>
+        <!-- Entire path of the game executable -->
+        <GameExePath>$(GameDir)$(GameExe)</GameExePath>
+        <!-- Version of the game supported by the plugin -->
+        <!-- The value must be the same than the one in CI/CD -->
+        <!-- https://www.nuget.org/packages/LethalCompany.GameLibs.Steam -->
+        <GameVersion>49.0.0-alpha.1</GameVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Allows to interact with private fields of classes -->
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+
+        <!-- Determines the version of the plugin by using git tags -->
+        <PackageReference Include="MinVer" Version="4.3.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
+    </ItemGroup>
+
+    <!-- Reference to the game assemblies -->
+    <!-- On local build, the assemblies are present in the game directory -->
+    <ItemGroup Condition="$(CI) != 'true'">
+        <!-- List of game assembly to include as reference -->
+        <DllNames Include="Assembly-CSharp" Publicize="true" />
+        <DllNames Include="Unity.Netcode.Runtime" />
+        <DllNames Include="ClientNetworkTransform" />
+        <DllNames Include="Facepunch.Steamworks.Win64" />
+        <DllNames Include="Newtonsoft.Json" />
+        <DllNames Include="Unity.TextMeshPro" />
+        <DllNames Include="UnityEngine.UI" />
+        <DllNames Include="Unity.InputSystem" />
+        <DllNames Include="Unity.InputSystem.ForUI" />
+        <DllNames Include="Unity.Netcode.Components" />
+        <DllNames Include="Unity.Networking.Transport" />
+        <DllNames Include="UnityEngine" />
+        <DllNames Include="UnityEngine.AnimationModule" />
+        <DllNames Include="UnityEngine.AssetBundleModule" />
+        <DllNames Include="UnityEngine.AudioModule" />
+        <DllNames Include="UnityEngine.CoreModule" />
+
+        <Reference Include="@(DllNames)" HintPath="$(AssemblyGameDir)%(Identity).dll"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="$(CI) != 'true'">
+        <!-- List of BepInEx Core assembly to include as reference -->
+        <DllNames Include="0Harmony" />
+        <DllNames Include="BepInEx" />
+        <DllNames Include="HarmonyXInterop" />
+        <DllNames Include="Mono.Cecil" />
+        <DllNames Include="Mono.Cecil.Mdb" />
+        <DllNames Include="Mono.Cecil.Pdb" />
+        <DllNames Include="Mono.Cecil.Rocks" />
+        <DllNames Include="MonoMod.RuntimeDetour" />
+        <DllNames Include="MonoMod.Utils" />
+
+        <Reference Include="@(DllNames)" HintPath="$(BepInExCoreDir)%(Identity).dll"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="$(CI) != 'true'">
+        <!-- List of BepInEx Core assembly to include as reference -->
+        <DllNames Include="LethalConfig" />
+
+        <Reference Include="@(DllNames)" HintPath="$(PluginGameDir)%(Identity).dll"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Properties\Resources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Resources.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Properties\Resources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <!-- On CI build, the assemblies are downloaded from NuGet -->
+    <ItemGroup Condition="$(CI) == 'true'">
+        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="$(GameVersion)" PrivateAssets="all" />
+    </ItemGroup>
+</Project>
