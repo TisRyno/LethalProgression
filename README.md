@@ -1,6 +1,9 @@
 # Lethal Progression
 - Expand the experience system by adding numbered levels, XP points, and spendable skillpoints, with full stat upgrades.
 
+## This is another forked version until either Stoneman or CatsArmy update their versions
+This mod will be accepting PRs with fixes, as well as bug reports. I do not intend on creating new features.
+
 # !!!!EVERYONE needs this mod for it to work!!!!
 
 #### Upgrades! (In your pause menu).
@@ -15,6 +18,8 @@
 - Hand Slots
 - Loot Value
 - Oxygen
+- Strength
+- Jump Height
 
 #### Level up yourself and the crew:
 - Assign points into stats to improve your performance.
