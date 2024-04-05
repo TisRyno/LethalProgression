@@ -220,7 +220,7 @@ namespace LethalProgression
         /////////////////////////////////////////////////
         /// Team Loot Upgrade Sync
         /////////////////////////////////////////////////
-        public void TeamLootValueUpdate(float update, int newValue)
+        public void TeamLootValueUpdate(float update)
         {
             TeamLootValueUpdate_ServerRpc(update);
         }
@@ -229,8 +229,13 @@ namespace LethalProgression
         public void TeamLootValueUpdate_ServerRpc(float updatedValue)
         {
             float mult = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].GetMultiplier();
-            float newvalue = updatedValue * mult;
-            teamLootValue.Value += newvalue;
+            float value = updatedValue * mult;
+
+            teamLootValue.Value += value;
+            if (value == 0)
+            {
+                teamLootValue.Value = value;
+            }
             LethalPlugin.Log.LogInfo($"Changed team loot value by {updatedValue * mult} turning into {teamLootValue.Value}.");
         }
 

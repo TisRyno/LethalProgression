@@ -1,12 +1,8 @@
-﻿using BepInEx.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 using LethalProgression.Config;
 using System.Globalization;
+
 namespace LethalProgression.Skills
 {
     public enum UpgradeType
@@ -26,7 +22,7 @@ namespace LethalProgression.Skills
     {
         public Dictionary<UpgradeType, Skill> skills = new Dictionary<UpgradeType, Skill>();
 
-        public void CreateSkill(UpgradeType upgrade, string name, string description, string shortname, string attribute, int cost, int maxLevel, float multiplier, Action<int, int> callback = null, bool teamShared = false)
+        public void CreateSkill(UpgradeType upgrade, string name, string description, string shortname, string attribute, int cost, int maxLevel, float multiplier, Action<int> callback = null, bool teamShared = false)
         {
             Skill newSkill = new Skill(name, description, shortname, attribute, upgrade, cost, maxLevel, multiplier, callback, teamShared);
             skills.Add(upgrade, newSkill);
@@ -197,12 +193,12 @@ namespace LethalProgression.Skills
         private readonly int _cost;
         private readonly int _maxLevel;
         private readonly float _multiplier;
-        private readonly Action<int, int> _callback;
+        private readonly Action<int> _callback;
         public bool _teamShared;
         private int _level;
         public Skill(string name, string description, string shortname, string attribute,
             UpgradeType upgradeType, int cost, int maxLevel, float multiplier,
-            Action<int, int> callback = null, bool teamShared = false)
+            Action<int> callback = null, bool teamShared = false)
         {
             _name = name;
             _shortName = shortname;
@@ -272,7 +268,7 @@ namespace LethalProgression.Skills
             _level = newLevel;
             // level is number of changes
             int changes = newLevel - _level;
-            _callback?.Invoke(changes, newLevel);
+            _callback?.Invoke(changes);
         }
 
         public void AddLevel(int change)
@@ -280,7 +276,7 @@ namespace LethalProgression.Skills
             _level += change;
             int newLevel = _level;
 
-            _callback?.Invoke(change, newLevel);
+            _callback?.Invoke(change);
         }
     }
 }

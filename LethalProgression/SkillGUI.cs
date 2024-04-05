@@ -327,7 +327,7 @@ namespace LethalProgression.GUI
             }
         }
 
-        public void RemoveSkillPoint(LethalProgression.Skills.Skill skill, int amt)
+        public void RemoveSkillPoint(Skill skill, int amt)
         {
             if (skill.GetLevel() == 0)
                 return;
@@ -372,4 +372,5 @@ namespace LethalProgression.GUI
                 }
             }
         }
+    }
 }

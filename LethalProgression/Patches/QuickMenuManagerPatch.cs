@@ -64,6 +64,7 @@ namespace LethalProgression.Patches
         {
             GameObject _pauseMenu = GameObject.Find("/Systems/UI/Canvas/QuickMenu");
             GameObject _gameXPText = GameObject.Find("/Systems/UI/Canvas/EndgameStats/LevelUp/Total");
+
             //Container => [XpBar => BarProgression], [Profit,Level]
             if (!_xpInfoContainer)
             {
@@ -73,6 +74,7 @@ namespace LethalProgression.Patches
                 _xpInfoContainer.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
                 _xpInfoContainer.transform.Translate(-1.7f, 0.9f, 0f);
             }
+
             if (!_xpBar)
             {
                 ////// XP Bar //////
@@ -83,15 +85,17 @@ namespace LethalProgression.Patches
 
                 ////// XP Text //////
                 _xpText = GameObject.Instantiate(_gameXPText).GetComponent<TextMeshProUGUI>();
+
                 _xpText.transform.SetParent(_xpBar.transform, false);
                 _xpText.transform.Translate(-0.75f, 0.21f, 0f);
                 _xpText.name = "XPText";
                 _xpText.alignment = TextAlignmentOptions.Center;
                 _xpText.SetText("0/1000");
-
                 _xpText.color = new Color(1f, 0.6f, 0f, 1f);
+
                 ////// Level Text /////
                 _xpLevel = GameObject.Instantiate(_gameXPText).GetComponent<TextMeshProUGUI>();
+
                 _xpLevel.transform.SetParent(_xpInfoContainer.transform, false);
                 _xpLevel.transform.position = new Vector3(_xpBar.transform.position.x,
                     _xpBar.transform.position.y, _xpBar.transform.position.z);
@@ -100,13 +104,15 @@ namespace LethalProgression.Patches
                 _xpLevel.alignment = TextAlignmentOptions.Center;
                 _xpLevel.SetText("Level: 0");
                 _xpLevel.color = new Color(1f, 0.6f, 0f, 1f);
+
                 //Level x.7 y.2
                 //Profit x.7 -y.2
+
                 ///// PROFIT! /////
                 _profit = GameObject.Instantiate(_gameXPText).GetComponent<TextMeshProUGUI>();
+
                 _profit.transform.SetParent(_xpInfoContainer.transform, false);
-                _profit.transform.position = new Vector3(_xpBar.transform.position.x,
-                    _xpBar.transform.position.y, _xpBar.transform.position.z);
+                _profit.transform.position = new Vector3(_xpBar.transform.position.x, _xpBar.transform.position.y, _xpBar.transform.position.z);
                 _profit.transform.Translate(-0.10f, -0.2f, 0f);//x +.7, y -.2
                 _profit.name = "XPProfit";
                 _profit.alignment = TextAlignmentOptions.Center;
@@ -118,12 +124,13 @@ namespace LethalProgression.Patches
             {
                 ////// XP Progress //////
                 GameObject _gameXPBarProgress = GameObject.Find("/Systems/UI/Canvas/EndgameStats/LevelUp/LevelUpMeter");
+
                 _xpBarProgress = GameObject.Instantiate(_gameXPBarProgress);
                 _xpBarProgress.transform.SetParent(_xpBar.transform, false);
+                _xpBarProgress.transform.SetAsFirstSibling();
                 _xpBarProgress.transform.localScale = new Vector3(0.597f, 5.21f, 1f);
                 _xpBarProgress.transform.Translate(-0.8f, 0.2f, 0f);
-                Vector3 pos = _xpBarProgress.transform.localPosition;
-                _xpBarProgress.transform.localPosition = new Vector3(pos.x + 7f, pos.y - 3.5f, 0f);
+                _xpBarProgress.transform.localPosition = new Vector3(0f, 0f, 0f);
                 _xpBarProgress.name = "XPBarProgress";
                 _xpBarProgress.GetComponent<Image>().fillAmount = 0f;
             }
