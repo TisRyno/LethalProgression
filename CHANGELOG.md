@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0 (2024-04-05)
+
+
+### Features
+
+* manually cherrypick the fixes ([7a69f00](https://github.com/TisRyno/LethalProgression/commit/7a69f00d6b34871c82c7a87328b7d6e0a70297ad))
+
 ## [1.5.2](https://github.com/TisRyno/LethalProgression/compare/v1.5.1...v1.5.2) (2024-04-04)
 
 
