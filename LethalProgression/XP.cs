@@ -37,32 +37,38 @@ namespace LethalProgression
 
         public void LoadSharedData()
         {
-            SaveSharedData sharedData = SaveManager.LoadShared();
+            SaveSharedData sharedData = SaveManager.LoadSharedFile();
 
             if (sharedData == null)
             {
                 LethalPlugin.Log.LogInfo("Shared data is null!");
                 return;
             }
-            LethalPlugin.Log.LogInfo("Loading XP!");
+
+            LethalPlugin.Log.LogInfo("Loading Lobby shared data.");
+
             xpLevel.Value = sharedData.level;
             xpPoints.Value = sharedData.xp;
             profit.Value = sharedData.quota;
+            
             xpReq.Value = GetXPRequirement();
 
-            LethalPlugin.Log.LogInfo(GetXPRequirement().ToString());
+            LethalPlugin.Log.LogInfo($"{sharedData.level} current lvl, {sharedData.xp} XP, {sharedData.quota} Profit, {xpReq.Value} xpReq");
         }
 
         public void LoadLocalData(string data)
         {
+            LethalPlugin.Log.LogInfo($"Received player data from host -> {data}");
+
             if (loadedSave)
             {
+                LethalPlugin.Log.LogWarning("Already loaded player data from host.");
                 return;
             }
 
             loadedSave = true;
-            LethalPlugin.Log.LogInfo("Loading local XP!");
             SaveData saveData = JsonConvert.DeserializeObject<SaveData>(data);
+
             skillPoints = saveData.skillPoints;
 
             int skillCheck = 0;
@@ -71,8 +77,6 @@ namespace LethalProgression
                 skillList.skills[skill.Key].AddLevel(skill.Value);
                 skillCheck += skill.Value;
             }
-
-            LethalPlugin.Log.LogInfo(GetXPRequirement().ToString());
 
             // Sanity check: If skillCheck goes over amount of skill points, reset all skills.
             //if (skillCheck > skillPoints)
@@ -108,6 +112,7 @@ namespace LethalProgression
             // Quota multiplier
             int quotaMult = int.Parse(SkillConfig.hostConfig["Quota Multiplier"]);
             int quotaVal = quota * quotaMult;
+
             req += (int)(req * (quotaVal / 100f));
 
             if (req > maxXPCost)
@@ -116,6 +121,7 @@ namespace LethalProgression
             }
 
             LethalPlugin.Log.LogInfo($"{playerCount} players, {quota} quotas, {initialXPCost} initial cost, {personValue} person value, {quotaVal} quota value, {req} total cost.");
+            
             return req;
         }
 
@@ -142,11 +148,6 @@ namespace LethalProgression
         public void SetSkillPoints(int num)
         {
             skillPoints = num;
-        }
-
-        public void AddSkillPoint()
-        {
-            skillPoints++;
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -217,13 +218,13 @@ namespace LethalProgression
         /////////////////////////////////////////////////
         /// Team Loot Upgrade Sync
         /////////////////////////////////////////////////
-        public void TeamLootValueUpdate(int change)
+        public void TeamLootLevelUpdate(int change)
         {
-            TeamLootValueUpdate_ServerRpc(change);
+            TeamLootLevelUpdate_ServerRpc(change);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void TeamLootValueUpdate_ServerRpc(int change)
+        public void TeamLootLevelUpdate_ServerRpc(int change)
         {
             teamLootLevel.Value += change;
 
@@ -327,7 +328,7 @@ namespace LethalProgression
         {
             SetHandSlot(playerID, handSlots);
         }
-        
+
         // CONFIGS
         [ServerRpc(RequireOwnership = false)]
         public void PlayerConnect_ServerRpc()
@@ -375,6 +376,8 @@ namespace LethalProgression
         [ServerRpc(RequireOwnership = false)]
         public void SaveData_ServerRpc(ulong steamID, string saveData)
         {
+            LethalPlugin.Log.LogInfo($"Received SaveData request for {steamID} with data -> {saveData}");
+
             SaveManager.Save(steamID, saveData);
             SaveManager.SaveShared(xpPoints.Value, xpLevel.Value, profit.Value);
         }
@@ -383,7 +386,7 @@ namespace LethalProgression
         [ServerRpc(RequireOwnership = false)]
         public void RequestSavedData_ServerRpc(ulong steamID)
         {
-            string saveData = SaveManager.Load(steamID);
+            string saveData = SaveManager.LoadPlayerFile(steamID);
             SendSavedData_ClientRpc(saveData);
         }
 

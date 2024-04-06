@@ -228,6 +228,7 @@ namespace LethalProgression.GUI
         {
             if (skill._teamShared)
                 return;
+            
             GameObject bonusLabel = skillButton.transform.GetChild(1).gameObject;
             bonusLabel.GetComponent<TextMeshProUGUI>().SetText(skill.GetLevel().ToString());
             GameObject attributeLabel = skillButton.transform.GetChild(2).gameObject;
@@ -242,6 +243,7 @@ namespace LethalProgression.GUI
             {
                 if (skill.Value._teamShared)
                     continue;
+
                 GameObject skillButton = skillButtonsList.Find(x => x.name == skill.Value.GetShortName());
                 LoadSkillData(skill.Value, skillButton);
             }
@@ -258,6 +260,7 @@ namespace LethalProgression.GUI
 
             activeSkill = skill;
             upgradeName.SetText(skill.GetName());
+
             if (skill.GetMaxLevel() == 99999)
             {
                 upgradeAmt.SetText($"{skill.GetLevel()}");
@@ -266,6 +269,7 @@ namespace LethalProgression.GUI
             {
                 upgradeAmt.SetText($"{skill.GetLevel()} / {skill.GetMaxLevel()}");
             }
+
             //upgradeAmt.SetText(skill.GetLevel().ToString());
             upgradeDesc.SetText(skill.GetDescription());
 

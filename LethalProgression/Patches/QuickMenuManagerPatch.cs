@@ -14,6 +14,7 @@ namespace LethalProgression.Patches
         private static TextMeshProUGUI _xpText;
         private static TextMeshProUGUI _xpLevel;
         private static TextMeshProUGUI _profit;
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(QuickMenuManager), "OpenQuickMenu")]
         private static void QuickMenuXPBar(QuickMenuManager __instance)
@@ -36,6 +37,8 @@ namespace LethalProgression.Patches
             if (!_xpInfoContainer || !_xpBar || !_xpBarProgress)
                 return;
 
+            LC_XP xpInstance = LP_NetworkManager.xpInstance;
+
             // If the settings menu or exit game menu is open, we don't want to show the XP bar.
             bool activeState = __instance.mainButtonsPanel.activeSelf;
             _xpInfoContainer.SetActive(activeState);
@@ -44,11 +47,11 @@ namespace LethalProgression.Patches
             // XP Text. Values of how much XP you need to level up.
             // XP Level, which is just the level you're on.
             // Profit, which is how much money you've made.
-            _xpText.text = LP_NetworkManager.xpInstance.GetXP().ToString() + " / " + LP_NetworkManager.xpInstance.xpReq.Value.ToString();
-            _xpLevel.text = "Level: " + LP_NetworkManager.xpInstance.GetLevel().ToString();
-            _profit.text = "You've made.. " + LP_NetworkManager.xpInstance.GetProfit().ToString() + "$";
+            _xpText.text = xpInstance.GetXP().ToString() + " / " + xpInstance.xpReq.Value.ToString();
+            _xpLevel.text = "Level: " + xpInstance.GetLevel().ToString();
+            _profit.text = "You've made.. " + xpInstance.GetProfit().ToString() + "$";
             // Set the bar fill
-            _xpBarProgress.GetComponent<Image>().fillAmount = LP_NetworkManager.xpInstance.GetXP() / (float)LP_NetworkManager.xpInstance.xpReq.Value;
+            _xpBarProgress.GetComponent<Image>().fillAmount = xpInstance.GetXP() / (float)xpInstance.xpReq.Value;
         }
 
         public static void MakeNewXPBar()

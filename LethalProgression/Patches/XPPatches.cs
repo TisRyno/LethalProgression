@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using LethalProgression.Skills;
 using LethalProgression.GUI;
 using Steamworks;
@@ -39,7 +39,7 @@ namespace LethalProgression.Patches
             {
                 int localLootLevel = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].GetLevel();
 
-                LP_NetworkManager.xpInstance.TeamLootValueUpdate(-localLootLevel);
+                LP_NetworkManager.xpInstance.TeamLootLevelUpdate(-localLootLevel);
             }
 
             SprintSpeed.sprintSpeed = 2.25f;
@@ -67,6 +67,7 @@ namespace LethalProgression.Patches
             {
                 return;
             }
+
             LP_NetworkManager.xpInstance.xpReq.Value = LP_NetworkManager.xpInstance.GetXPRequirement();
         }
     }

@@ -52,21 +52,24 @@ namespace LethalProgression.Saving
             return Application.persistentDataPath + "/lethalprogression/save" + (saveFileSlot + 1) + "/";
         }
 
-        public static string Load(ulong steamId)
+        public static string LoadPlayerFile(ulong steamId)
         {
             saveFileSlot = GameNetworkManager.Instance.saveFileNum;
 
             if (!File.Exists(GetSavePath() + steamId + ".json"))
             {
+                LethalPlugin.Log.LogInfo($"Player file for {steamId} doesn't exist");
                 return null;
             }
+
+            LethalPlugin.Log.LogInfo($"Player file for {steamId} found");
 
             string json = File.ReadAllText(GetSavePath() + steamId + ".json");
 
             return json;
         }
 
-        public static SaveSharedData LoadShared()
+        public static SaveSharedData LoadSharedFile()
         {
             saveFileSlot = GameNetworkManager.Instance.saveFileNum;
 
@@ -76,8 +79,10 @@ namespace LethalProgression.Saving
                 return null;
             }
 
-            string json = File.ReadAllText(GetSavePath() + "shared.json");
             LethalPlugin.Log.LogInfo("Shared file exists");
+
+            string json = File.ReadAllText(GetSavePath() + "shared.json");
+
             return JsonConvert.DeserializeObject<SaveSharedData>(json);
         }
     }
