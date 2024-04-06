@@ -1,13 +1,6 @@
-﻿using HarmonyLib;
-using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
 using Unity.Netcode;
-using Unity.Networking;
 using UnityEngine;
-using System.IO;
-using UnityEngine.SceneManagement;
 using System.Collections;
 using GameNetcodeStuff;
 using LethalProgression.Config;
@@ -16,7 +9,6 @@ using LethalProgression.GUI;
 using LethalProgression.Patches;
 using LethalProgression.Saving;
 using Newtonsoft.Json;
-using Steamworks;
 using System.Linq;
 
 namespace LethalProgression
