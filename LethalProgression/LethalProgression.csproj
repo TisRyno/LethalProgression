@@ -77,7 +77,6 @@
     <ItemGroup Condition="$(CI) != 'true'">
         <!-- List of game assembly to include as reference -->
         <DllNames Include="Assembly-CSharp" Publicize="true" />
-        <DllNames Include="Unity.Netcode.Runtime" />
         <DllNames Include="ClientNetworkTransform" />
         <DllNames Include="Facepunch.Steamworks.Win64" />
         <DllNames Include="Newtonsoft.Json" />
