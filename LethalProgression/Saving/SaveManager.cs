@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Newtonsoft.Json;
 using System.IO;
-using Steamworks;
 
 namespace LethalProgression.Saving
 {

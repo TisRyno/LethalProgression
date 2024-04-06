@@ -2,22 +2,12 @@
 using UnityEngine;
 using HarmonyLib;
 using BepInEx.Configuration;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BepInEx.Logging;
 using System.Reflection;
-using System.IO;
-using UnityEngine.SceneManagement;
 using BepInEx.Bootstrap;
-using LethalProgression.GUI;
-using LethalProgression.Skills;
-using LethalProgression.Patches;
 using LethalProgression.Config;
-using Unity.Netcode;
-using UnityEngine;
 
 namespace LethalProgression
 {

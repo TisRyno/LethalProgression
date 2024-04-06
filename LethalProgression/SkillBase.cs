@@ -15,7 +15,7 @@ namespace LethalProgression.Skills
         Oxygen,
         JumpHeight,
         SprintSpeed,
-        Strength
+        Strength,
     }
 
     internal class SkillList
@@ -267,14 +267,12 @@ namespace LethalProgression.Skills
         {
             _level = newLevel;
             // level is number of changes
-            int changes = newLevel - _level;
-            _callback?.Invoke(changes);
+            _callback?.Invoke(newLevel - _level);
         }
 
         public void AddLevel(int change)
         {
             _level += change;
-            int newLevel = _level;
 
             _callback?.Invoke(change);
         }

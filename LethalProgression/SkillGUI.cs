@@ -1,15 +1,9 @@
 ﻿using HarmonyLib;
 using LethalProgression.Skills;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using LethalProgression.Patches;
 using LethalProgression.Config;
 
 namespace LethalProgression.GUI
@@ -81,6 +75,7 @@ namespace LethalProgression.GUI
 
             RealTimeUpdateInfo();
         }
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(QuickMenuManager), "CloseQuickMenu")]
         private static void SkillMenuClose(QuickMenuManager __instance)
@@ -97,6 +92,7 @@ namespace LethalProgression.GUI
             points.text = LP_NetworkManager.xpInstance.GetSkillPoints().ToString();
         }
     }
+
     internal class SkillsGUI
     {
         public GameObject mainPanel;
@@ -104,17 +100,21 @@ namespace LethalProgression.GUI
         public Skill activeSkill;
         public GameObject templateSlot;
         public List<GameObject> skillButtonsList = new List<GameObject>();
+
+        public int shownSkills = 0;
+
         public SkillsGUI()
         {
             CreateSkillMenu();
             GUIUpdate.guiInstance = this;
         }
+
         public void OpenSkillMenu()
         {
             GUIUpdate.isMenuOpen = true;
             mainPanel.SetActive(true);
         }
-        public int shownSkills = 0;
+
         public void CreateSkillMenu()
         {
             mainPanel = GameObject.Instantiate(LethalPlugin.skillBundle.LoadAsset<GameObject>("SkillMenu"));
@@ -350,7 +350,7 @@ namespace LethalProgression.GUI
         }
 
         // START SPECIAL BOYS:
-        public void TeamLootHudUpdate(float oldValue, float newValue)
+        public void TeamLootHudUpdate(int oldValue, int newValue)
         {
             foreach (var button in skillButtonsList)
             {
@@ -366,9 +366,12 @@ namespace LethalProgression.GUI
                     bonusLabel.GetComponent<TextMeshProUGUI>().SetText($"{skill.GetLevel()}");
                     button.GetComponentInChildren<TextMeshProUGUI>().SetText($"{skill.GetShortName()}:");
 
+                    float mult = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].GetMultiplier();
+                    float value = LP_NetworkManager.xpInstance.teamLootLevel.Value * mult;
+
                     GameObject attributeLabel = button.transform.GetChild(2).gameObject;
-                    attributeLabel.GetComponent<TextMeshProUGUI>().SetText($"(+{LP_NetworkManager.xpInstance.teamLootValue.Value}% {skill.GetAttribute()})");
-                    LethalPlugin.Log.LogInfo($"Setting team value hud to {LP_NetworkManager.xpInstance.teamLootValue.Value}");
+                    attributeLabel.GetComponent<TextMeshProUGUI>().SetText($"(+{value}% {skill.GetAttribute()})");
+                    LethalPlugin.Log.LogInfo($"Setting team value hud to {value}");
                 }
             }
         }

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using UnityEngine.UI;
-using UnityEngine.InputSystem.Utilities;
 using GameNetcodeStuff;
 
 namespace LethalProgression.Skills

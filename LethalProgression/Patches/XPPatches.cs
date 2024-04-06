@@ -1,10 +1,5 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using LethalProgression.Skills;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using Unity.Netcode;
 using LethalProgression.GUI;
 using Steamworks;
 using GameNetcodeStuff;
