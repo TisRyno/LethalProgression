@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HarmonyLib;
 using LethalProgression.Skills;
 using Newtonsoft.Json;
@@ -13,7 +13,8 @@ namespace LethalProgression.Saving
         [HarmonyPatch(typeof(GameNetworkManager), "SaveGame")]
         private static void SaveGame(GameNetworkManager __instance)
         {
-            DoSave();
+            LethalPlugin.Log.LogDebug("Invoked DoSave via SaveGame");
+            DoSave(__instance);
         }
 
         // Whenever disconnect
@@ -21,14 +22,21 @@ namespace LethalProgression.Saving
         [HarmonyPatch(typeof(GameNetworkManager), "Disconnect")]
         private static void Disconnect(GameNetworkManager __instance)
         {
-            DoSave();
+            if (__instance.currentLobby == null)
+                return;
+
+            LethalPlugin.Log.LogDebug("Invoked DoSave via Disconnect");
+
+            DoSave(__instance);
         }
 
-        public static void DoSave()
+        public static void DoSave(GameNetworkManager __instance)
         {
-            SaveData saveData = new SaveData();
-            saveData.steamId = GameNetworkManager.Instance.localPlayerController.playerSteamId;
-            saveData.skillPoints = LP_NetworkManager.xpInstance.skillPoints;
+            SaveData saveData = new SaveData
+            {
+                steamId = __instance.localPlayerController.playerSteamId,
+                skillPoints = LP_NetworkManager.xpInstance.skillPoints
+            };
 
             foreach (KeyValuePair<UpgradeType, Skill> skill in LP_NetworkManager.xpInstance.skillList.skills)
             {
@@ -37,7 +45,7 @@ namespace LethalProgression.Saving
             }
 
             string data = JsonConvert.SerializeObject(saveData);
-            LP_NetworkManager.xpInstance.SaveData_ServerRpc(GameNetworkManager.Instance.localPlayerController.playerSteamId, data);
+            LP_NetworkManager.xpInstance.SaveData_ServerRpc(__instance.localPlayerController.playerSteamId, data);
         }
 
         [HarmonyPostfix]

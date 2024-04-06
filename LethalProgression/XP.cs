@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using System.Collections;
@@ -21,18 +21,20 @@ namespace LethalProgression
         public NetworkVariable<int> xpReq = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         // Special boys
-        public NetworkVariable<float> teamLootValue = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        public NetworkVariable<int> teamLootLevel = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public int skillPoints;
         public SkillList skillList;
         public SkillsGUI guiObj;
         public bool Initialized = false;
         public bool loadedSave = false;
+
         public void Start()
         {
             LethalPlugin.Log.LogInfo("XP Network Behavior Made!");
             PlayerConnect_ServerRpc();
         }
+
         public void LoadSharedData()
         {
             SaveSharedData sharedData = SaveManager.LoadShared();
@@ -50,6 +52,7 @@ namespace LethalProgression
 
             LethalPlugin.Log.LogInfo(GetXPRequirement().ToString());
         }
+
         public void LoadLocalData(string data)
         {
             if (loadedSave)
@@ -68,6 +71,7 @@ namespace LethalProgression
                 skillList.skills[skill.Key].AddLevel(skill.Value);
                 skillCheck += skill.Value;
             }
+
             LethalPlugin.Log.LogInfo(GetXPRequirement().ToString());
 
             // Sanity check: If skillCheck goes over amount of skill points, reset all skills.
@@ -87,6 +91,7 @@ namespace LethalProgression
                 skillPoints += (xpLevel.Value + 5) - (skillCheck + skillPoints);
             }
         }
+        
         public int GetXPRequirement()
         {
             // First, we need to check how many players.
@@ -212,23 +217,17 @@ namespace LethalProgression
         /////////////////////////////////////////////////
         /// Team Loot Upgrade Sync
         /////////////////////////////////////////////////
-        public void TeamLootValueUpdate(float update)
+        public void TeamLootValueUpdate(int change)
         {
-            TeamLootValueUpdate_ServerRpc(update);
+            TeamLootValueUpdate_ServerRpc(change);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void TeamLootValueUpdate_ServerRpc(float updatedValue)
+        public void TeamLootValueUpdate_ServerRpc(int change)
         {
-            float mult = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].GetMultiplier();
-            float value = updatedValue * mult;
+            teamLootLevel.Value += change;
 
-            teamLootValue.Value += value;
-            if (value == 0)
-            {
-                teamLootValue.Value = value;
-            }
-            LethalPlugin.Log.LogInfo($"Changed team loot value by {updatedValue * mult} turning into {teamLootValue.Value}.");
+            LethalPlugin.Log.LogInfo($"Changed team loot value by {change} turning into {teamLootLevel.Value}.");
         }
 
         /////////////////////////////////////////////////
@@ -328,6 +327,7 @@ namespace LethalProgression
         {
             SetHandSlot(playerID, handSlots);
         }
+        
         // CONFIGS
         [ServerRpc(RequireOwnership = false)]
         public void PlayerConnect_ServerRpc()
@@ -361,7 +361,7 @@ namespace LethalProgression
                 }
 
                 guiObj = new SkillsGUI();
-                teamLootValue.OnValueChanged += guiObj.TeamLootHudUpdate;
+                teamLootLevel.OnValueChanged += guiObj.TeamLootHudUpdate;
 
                 skillPoints = xpLevel.Value + 5;
 

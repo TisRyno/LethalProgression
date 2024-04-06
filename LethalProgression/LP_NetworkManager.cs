@@ -8,6 +8,9 @@ namespace LethalProgression
     [HarmonyPatch]
     internal class LP_NetworkManager
     {
+        public static LC_XP xpInstance;
+        public static GameObject xpNetworkObject;
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameNetworkManager), "Start")]
         public static void Init()
@@ -20,21 +23,19 @@ namespace LethalProgression
             NetworkManager.Singleton.AddNetworkPrefab(xpNetworkObject);
         }
 
-        public static GameObject xpNetworkObject;
-
         [HarmonyPostfix]
         [HarmonyPatch(typeof(StartOfRound), "Awake")]
         static void SpawnNetworkHandler()
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-                var networkHandlerHost = Object.Instantiate(xpNetworkObject, Vector3.zero, Quaternion.identity);
+                GameObject networkHandlerHost = Object.Instantiate(xpNetworkObject, Vector3.zero, Quaternion.identity);
+
                 networkHandlerHost.GetComponent<NetworkObject>().Spawn();
                 xpInstance = networkHandlerHost.GetComponent<LC_XP>();
+                
                 LethalPlugin.Log.LogInfo("XPHandler Initialized.");
             }
         }
-
-        public static LC_XP xpInstance;
     }
 }

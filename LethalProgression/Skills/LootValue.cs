@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 
 namespace LethalProgression.Skills
 {
@@ -15,7 +15,10 @@ namespace LethalProgression.Skills
             if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.Value))
                 return;
 
-            float scrapValueAdded = LP_NetworkManager.xpInstance.teamLootValue.Value / 100;
+            float mult = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].GetMultiplier();
+            float value = LP_NetworkManager.xpInstance.teamLootLevel.Value * mult;
+
+            float scrapValueAdded = value / 100;
 
             try
             {
