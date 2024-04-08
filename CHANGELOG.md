@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/TisRyno/LethalProgression/compare/v1.7.0...v1.7.1) (2024-04-08)
+
+
+### Bug Fixes
+
+* dummy commit to be able to release ([4d60b73](https://github.com/TisRyno/LethalProgression/commit/4d60b73feb732857949137f3f2af5520ef081a48))
+
 ## [1.7.0](https://github.com/TisRyno/LethalProgression/compare/v1.6.0...v1.7.0) (2024-04-08)
 
 
