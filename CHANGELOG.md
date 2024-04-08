@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.7.0](https://github.com/TisRyno/LethalProgression/compare/v1.6.0...v1.7.0) (2024-04-08)
+
+
+### Features
+
+* new networking and lots of bug fixes ([214de7e](https://github.com/TisRyno/LethalProgression/commit/214de7ea872641ada627fc3400ef988a0309fb1a))
+
+
+### Bug Fixes
+
+* ensure skill point addition is pre-setting for syncing reasons ([3f9665e](https://github.com/TisRyno/LethalProgression/commit/3f9665e8bd8726be6b892c139404fe96b043e81a))
+* save file issues ([42d1a89](https://github.com/TisRyno/LethalProgression/commit/42d1a8950147d239b8e6b3b0a70a0716be913dcb))
+
 ## [1.6.0](https://github.com/TisRyno/LethalProgression/compare/v1.5.3...v1.6.0) (2024-04-05)
 
 
