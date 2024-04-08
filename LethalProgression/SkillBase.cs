@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using LethalProgression.Config;
 using System.Globalization;
+using LethalProgression.Saving;
 
 namespace LethalProgression.Skills
 {
@@ -130,7 +131,8 @@ namespace LethalProgression.Skills
                     1,
                     int.Parse(SkillConfig.hostConfig["Loot Value Max Level"]),
                     float.Parse(SkillConfig.hostConfig["Loot Value Multiplier"], CultureInfo.InvariantCulture),
-                    LootValue.LootValueUpdate
+                    LootValue.LootValueUpdate,
+                    true
                 );
             }
 
@@ -271,11 +273,16 @@ namespace LethalProgression.Skills
             return _multiplier * _level;
         }
 
-        public void SetLevel(int newLevel)
+        public void SetLevel(int newLevel, bool triggerHostProfileSave = true)
         {
+            int oldLevel = _level;
+
             _level = newLevel;
             // level is number of changes
-            _callback?.Invoke(newLevel - _level);
+            _callback?.Invoke(newLevel - oldLevel);
+
+            if (triggerHostProfileSave)
+                SaveManager.TriggerHostProfileSave();
         }
 
         public void AddLevel(int change)
@@ -283,6 +290,8 @@ namespace LethalProgression.Skills
             _level += change;
 
             _callback?.Invoke(change);
+
+            SaveManager.TriggerHostProfileSave();
         }
     }
 }

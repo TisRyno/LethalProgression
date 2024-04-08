@@ -8,21 +8,85 @@ using LethalProgression.Skills;
 using LethalProgression.GUI;
 using LethalProgression.Patches;
 using LethalProgression.Saving;
+using LethalProgression.Network;
 using Newtonsoft.Json;
 using System.Linq;
+using LethalNetworkAPI;
+using System;
+using Mono.CompilerServices.SymbolWriter;
 
 namespace LethalProgression
 {
     internal class LC_XP : NetworkBehaviour
     {
-        public NetworkVariable<int> xpPoints = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        public NetworkVariable<int> xpLevel = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        public NetworkVariable<int> profit = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        public NetworkVariable<int> xpReq = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        public LethalNetworkVariable<int> teamLevel = new LethalNetworkVariable<int>("teamLevel") {
+            Value = 0
+        };
 
-        // Special boys
-        public NetworkVariable<int> teamLootLevel = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        public LethalNetworkVariable<int> teamXP = new LethalNetworkVariable<int>("teamXP") {
+            Value = 0
+        };
 
+        public LethalNetworkVariable<int> teamTotalValue = new LethalNetworkVariable<int>("teamTotalValue") {
+            Value = 0
+        };
+
+        public LethalNetworkVariable<int> teamXPRequired = new LethalNetworkVariable<int>("teamXPRequired") {
+            Value = 0
+        };
+
+        public LethalNetworkVariable<int> teamLootLevel = new LethalNetworkVariable<int>("teamLootLevel") {
+            Value = 0
+        };
+
+        // New Player has Connected to Server Event
+        public LethalClientEvent playerConnectClientEvent = new LethalClientEvent(identifier: "playerConnectEvent");
+        public LethalServerEvent playerConnectServerEvent = new LethalServerEvent(identifier: "playerConnectEvent");
+
+        // Server needs to re-evaluate the XP Requirements
+        public LethalClientEvent evaluateXPRequirementClientEvent = new LethalClientEvent(identifier: "evaluateXPRequirementEvent");
+        public LethalServerEvent evaluateXPRequirementServerEvent = new LethalServerEvent(identifier: "evaluateXPRequirementEvent");
+
+        // Server needs to resend all player's hand slots
+        public LethalClientEvent calculateAllPlayersHandSlotsClientEvent = new LethalClientEvent(identifier: "calculateAllPlayersHandSlotsEvent");
+        public LethalServerEvent calculateAllPlayersHandSlotsServerEvent = new LethalServerEvent(identifier: "calculateAllPlayersHandSlotsEvent");
+
+        // Send Host config to Clients
+        public LethalServerMessage<string> sendConfigServerMessage = new LethalServerMessage<string>(identifier: "sendConfigMessage");
+        public LethalClientMessage<string> sendConfigClientMessage = new LethalClientMessage<string>(identifier: "sendConfigMessage");
+
+        // Request a Player Profile Data from Host
+        public LethalServerMessage<ulong> requestProfileDataServerMessage = new LethalServerMessage<ulong>(identifier: "requestProfileDataMessage");
+        public LethalClientMessage<ulong> requestProfileDataClientMessage = new LethalClientMessage<ulong>(identifier: "requestProfileDataMessage");
+
+        // Send a Player Profile back to Client
+        public LethalServerMessage<string> sendProfileDataServerMessage = new LethalServerMessage<string>(identifier: "sendProfileDataMessage");
+        public LethalClientMessage<string> receiveProfileDataClientMessage = new LethalClientMessage<string>(identifier: "sendProfileDataMessage");
+
+        // Request Host to save Player Profile data
+        public LethalServerMessage<string> saveProfileDataServerMessage = new LethalServerMessage<string>(identifier: "saveProfileDataMessage");
+        public LethalClientMessage<string> saveProfileDataClientMessage = new LethalClientMessage<string>(identifier: "saveProfileDataMessage");
+
+        // Request Host to update Team Loot Level
+        public LethalServerMessage<int> updateTeamLootLevelServerMessage = new LethalServerMessage<int>(identifier: "updateTeamLootLevelMessage");
+        public LethalClientMessage<int> updateTeamLootLevelClientMessage = new LethalClientMessage<int>(identifier: "updateTeamLootLevelMessage");
+
+        // Request Host to update Team XP
+        public LethalServerMessage<int> updateTeamXPServerMessage = new LethalServerMessage<int>(identifier: "updateTeamXPMessage");
+        public LethalClientMessage<int> updateTeamXPClientMessage = new LethalClientMessage<int>(identifier: "updateTeamXPMessage");
+
+        // Request Clients to update player skillpoints
+        public LethalServerMessage<int> updatePlayerSkillpointsServerMessage = new LethalServerMessage<int>(identifier: "updatePlayerSkillPointsMessage");
+        public LethalClientMessage<int> updatePlayerSkillpointsClientMessage = new LethalClientMessage<int>(identifier: "updatePlayerSkillPointsMessage");
+
+        // Request Server to update player hand slots
+        public LethalServerMessage<int> updateSPHandSlotsServerMessage = new LethalServerMessage<int>(identifier: "updateSPHandSlotsMessage");
+        public LethalClientMessage<int> updateSPHandSlotsClientMessage = new LethalClientMessage<int>(identifier: "updateSPHandSlotsMessage");
+
+        // Request Client to update player hand slots
+        public LethalServerMessage<PlayerHandSlotData> updatePlayerHandSlotsServerMessage = new LethalServerMessage<PlayerHandSlotData>(identifier: "updatePlayerHandSlotsMessage");
+        public LethalClientMessage<PlayerHandSlotData> updatePlayerHandSlotsClientMessage = new LethalClientMessage<PlayerHandSlotData>(identifier: "updatePlayerHandSlotsMessage");
+        
         public int skillPoints;
         public SkillList skillList;
         public SkillsGUI guiObj;
@@ -32,7 +96,92 @@ namespace LethalProgression
         public void Start()
         {
             LethalPlugin.Log.LogInfo("XP Network Behavior Made!");
-            PlayerConnect_ServerRpc();
+
+            // Network Variable handlers
+            teamLevel.OnValueChanged += OnTeamLevelChange;
+            teamXP.OnValueChanged += OnTeamXPChange;
+
+            // Network Events handlers
+            playerConnectServerEvent.OnReceived += PlayerConnect_C2SEvent;
+            evaluateXPRequirementServerEvent.OnReceived += EvaluateXPRequirements_C2SEvent;
+            calculateAllPlayersHandSlotsServerEvent.OnReceived += RefreshAllPlayerHandSlots_C2SEvent;
+
+            // Network Message handlers Server2Client
+            sendConfigClientMessage.OnReceived += SendHostConfig_S2CMessage;
+            receiveProfileDataClientMessage.OnReceived += LoadProfileData_S2CMessage;
+            updatePlayerSkillpointsClientMessage.OnReceived += UpdateSkillPoints_S2CMessage;
+            updatePlayerHandSlotsClientMessage.OnReceived += UpdatePlayerHandSlots_S2CMessage;
+
+            // Network Message handlers Client2Server
+            requestProfileDataServerMessage.OnReceived += RequestSavedData_C2SMessage;
+            saveProfileDataServerMessage.OnReceived += SaveProfileData_C2SMessage;
+            updateTeamLootLevelServerMessage.OnReceived += UpdateTeamLootLevel_C2SMessage;
+            updateTeamXPServerMessage.OnReceived += UpdateTeamXP_C2SMessage;
+            updateSPHandSlotsServerMessage.OnReceived += UpdateSPHandSlots_C2SMessage;
+
+            playerConnectClientEvent.InvokeServer();
+        }
+
+        public override void OnDestroy()
+        {
+             // Network Variable handlers
+            teamLevel.OnValueChanged -= OnTeamLevelChange;
+            teamXP.OnValueChanged -= OnTeamXPChange;
+            teamLootLevel.OnValueChanged -= guiObj.TeamLootHudUpdate;
+
+            // Network Events handlers
+            playerConnectServerEvent.OnReceived -= PlayerConnect_C2SEvent;
+            evaluateXPRequirementServerEvent.OnReceived -= EvaluateXPRequirements_C2SEvent;
+            calculateAllPlayersHandSlotsServerEvent.OnReceived -= RefreshAllPlayerHandSlots_C2SEvent;
+
+            // Network Message handlers Server2Client
+            sendConfigClientMessage.OnReceived -= SendHostConfig_S2CMessage;
+            receiveProfileDataClientMessage.OnReceived -= LoadProfileData_S2CMessage;
+            updatePlayerSkillpointsClientMessage.OnReceived -= UpdateSkillPoints_S2CMessage;
+            updatePlayerHandSlotsClientMessage.OnReceived -= UpdatePlayerHandSlots_S2CMessage;
+
+            // Network Message handlers Client2Server
+            requestProfileDataServerMessage.OnReceived -= RequestSavedData_C2SMessage;
+            saveProfileDataServerMessage.OnReceived -= SaveProfileData_C2SMessage;
+            updateTeamLootLevelServerMessage.OnReceived -= UpdateTeamLootLevel_C2SMessage;
+            updateTeamXPServerMessage.OnReceived -= UpdateTeamXP_C2SMessage;
+            updateSPHandSlotsServerMessage.OnReceived -= UpdateSPHandSlots_C2SMessage;
+
+            // Always invoked the base
+            base.OnDestroy();
+        }
+
+        private void OnTeamLevelChange(int newLevel)
+        {
+            StartCoroutine(
+                WaitUntilInitialisedThenAction(HUDManagerPatch.ShowLevelUp)
+            );
+        }
+
+        private void OnTeamXPChange(int newXP)
+        {
+            StartCoroutine(
+                WaitUntilInitialisedThenAction(HUDManagerPatch.ShowXPUpdate)
+            );
+        }
+
+        public IEnumerator WaitUntilInitialisedThenAction(Action callback)
+        {
+            yield return new WaitUntil(() => Initialized == true);
+
+            callback();
+        }
+
+        public void PlayerConnect_C2SEvent(ulong clientId)
+        {
+            LethalPlugin.Log.LogInfo($"Received PlayerConnect message from {clientId}");
+
+            IDictionary<string, string> configDict = LethalPlugin.Instance.GetAllConfigEntries();
+            string serializedConfig = JsonConvert.SerializeObject(configDict);
+
+            LethalPlugin.Log.LogInfo($"Sending config -> {serializedConfig}");
+
+            sendConfigServerMessage.SendAllClients(serializedConfig);
         }
 
         public void LoadSharedData()
@@ -47,35 +196,41 @@ namespace LethalProgression
 
             LethalPlugin.Log.LogInfo("Loading Lobby shared data.");
 
-            xpLevel.Value = sharedData.level;
-            xpPoints.Value = sharedData.xp;
-            profit.Value = sharedData.quota;
+            teamXP.Value = sharedData.xp;
+            teamLevel.Value = sharedData.level;
+            teamTotalValue.Value = sharedData.quota;
             
-            xpReq.Value = GetXPRequirement();
+            teamXPRequired.Value = CalculateXPRequirement();
 
-            LethalPlugin.Log.LogInfo($"{sharedData.level} current lvl, {sharedData.xp} XP, {sharedData.quota} Profit, {xpReq.Value} xpReq");
+            LethalPlugin.Log.LogInfo($"{sharedData.level} current lvl, {sharedData.xp} XP, {sharedData.quota} Profit, {teamXPRequired.Value} teamXPRequired");
         }
 
-        public void LoadLocalData(string data)
+        public IEnumerator LoadProfileData(string data)
         {
             LethalPlugin.Log.LogInfo($"Received player data from host -> {data}");
+
+            yield return new WaitUntil(() => Initialized == true);
 
             if (loadedSave)
             {
                 LethalPlugin.Log.LogWarning("Already loaded player data from host.");
-                return;
+                yield return null;
             }
 
             loadedSave = true;
             SaveData saveData = JsonConvert.DeserializeObject<SaveData>(data);
 
             skillPoints = saveData.skillPoints;
+            
+            LethalPlugin.Log.LogDebug($"skillPoints -> {skillPoints}");
 
             int skillCheck = 0;
             foreach (KeyValuePair<UpgradeType, int> skill in saveData.skillAllocation)
             {
-                skillList.skills[skill.Key].AddLevel(skill.Value);
+                LethalPlugin.Log.LogDebug($"{skill.Key} -> {skill.Value}");
+                skillList.skills[skill.Key].SetLevel(skill.Value, false);
                 skillCheck += skill.Value;
+                LethalPlugin.Log.LogDebug($"skillCheck -> {skillCheck}");
             }
 
             // Sanity check: If skillCheck goes over amount of skill points, reset all skills.
@@ -89,14 +244,16 @@ namespace LethalProgression
             //}
 
             // if the skill check is less than the current level plus five, add the difference
-            if ((skillCheck + skillPoints) < xpLevel.Value + 5)
+            if ((skillCheck + skillPoints) < teamLevel.Value + 5)
             {
-                LethalPlugin.Log.LogInfo($"Skill check is less than current level, adding {((xpLevel.Value + 5) - (skillCheck + skillPoints))} skill points.");
-                skillPoints += (xpLevel.Value + 5) - (skillCheck + skillPoints);
+                LethalPlugin.Log.LogInfo($"Skill check is less than current level, adding {teamLevel.Value + 5 - (skillCheck + skillPoints)} skill points.");
+                skillPoints += teamLevel.Value + 5 - (skillCheck + skillPoints);
             }
+
+            LP_NetworkManager.xpInstance.guiObj.UpdateAllStats();
         }
         
-        public int GetXPRequirement()
+        public int CalculateXPRequirement()
         {
             // First, we need to check how many players.
             int playerCount = StartOfRound.Instance.connectedPlayersAmount;
@@ -127,17 +284,17 @@ namespace LethalProgression
 
         public int GetXP()
         {
-            return xpPoints.Value;
+            return teamXP.Value;
         }
 
         public int GetLevel()
         {
-            return xpLevel.Value;
+            return teamLevel.Value;
         }
 
         public int GetProfit()
         {
-            return profit.Value;
+            return teamTotalValue.Value;
         }
 
         public int GetSkillPoints()
@@ -150,8 +307,7 @@ namespace LethalProgression
             skillPoints = num;
         }
 
-        [ServerRpc(RequireOwnership = false)]
-        public void ChangeXPRequirement_ServerRpc()
+        public void EvaluateXPRequirements_C2SEvent(ulong clientId)
         {
             StartCoroutine(XPRequirementCoroutine());
         }
@@ -159,74 +315,54 @@ namespace LethalProgression
         public IEnumerator XPRequirementCoroutine()
         {
             yield return new WaitForSeconds(0.5f);
-            xpReq.Value = GetXPRequirement();
+            teamXPRequired.Value = CalculateXPRequirement();
         }
 
-        [ServerRpc(RequireOwnership = false)]
-        public void AddXPServerRPC(int xp)
+        public void UpdateTeamXP_C2SMessage(int xpToAdd, ulong clientId)
         {
-            int oldXP = GetXP();
-
             // Update XP values
-            xpPoints.Value += xp;
-            profit.Value += xp;
+            teamXP.Value += xpToAdd;
+            teamTotalValue.Value += xpToAdd;
 
             int newXP = GetXP();
 
-            XPHUDUpdate_ClientRPC(oldXP, newXP, xp);
-
             // If we have enough XP to level up.
-            if (newXP >= xpReq.Value)
+            if (newXP >= teamXPRequired.Value)
             {
                 // How many times do we level up?
                 int levelUps = 0;
 
-                while (newXP >= xpReq.Value)
+                while (newXP >= teamXPRequired.Value)
                 {
                     levelUps++;
-                    newXP -= xpReq.Value;
-                    Givepoint_ClientRPC();
+                    newXP -= teamXPRequired.Value;
                 }
 
-                // Update XP values
-                xpPoints.Value = newXP;
-                xpLevel.Value += levelUps;
+                // Update level value
+                teamXP.Value = newXP;
+                teamLevel.Value += levelUps;
 
-
-                LevelUp_ClientRPC();
+                updatePlayerSkillpointsServerMessage.SendAllClients(levelUps);
             }
         }
 
-        [ClientRpc]
-        public void XPHUDUpdate_ClientRPC(int oldXP, int newXP, int xpGained)
+        public void UpdateSkillPoints_S2CMessage(int pointsToAdd)
         {
-            HUDManagerPatch.ShowXPUpdate(oldXP, newXP, newXP - oldXP);
-        }
-
-        [ClientRpc]
-        public void LevelUp_ClientRPC()
-        {
-            HUDManagerPatch.ShowLevelUp();
-        }
-
-        [ClientRpc]
-        public void Givepoint_ClientRPC()
-        {
-            skillPoints++;
+            skillPoints += pointsToAdd;
         }
 
         /////////////////////////////////////////////////
         /// Team Loot Upgrade Sync
         /////////////////////////////////////////////////
-        public void TeamLootLevelUpdate(int change)
-        {
-            TeamLootLevelUpdate_ServerRpc(change);
-        }
+        
+        public void UpdateTeamLootLevel_C2SMessage(int change, ulong clientId) {
+            int currentLootLevel = teamLootLevel.Value;
 
-        [ServerRpc(RequireOwnership = false)]
-        public void TeamLootLevelUpdate_ServerRpc(int change)
-        {
-            teamLootLevel.Value += change;
+            if (currentLootLevel + change < 0) {
+                teamLootLevel.Value = 0;
+            } else {
+                teamLootLevel.Value += change;
+            }
 
             LethalPlugin.Log.LogInfo($"Changed team loot value by {change} turning into {teamLootLevel.Value}.");
         }
@@ -235,30 +371,29 @@ namespace LethalProgression
         /// Hand Slot Sync
         /////////////////////////////////////////////////
 
-        // When updates.
-        [ServerRpc(RequireOwnership = false)]
-        public void ServerHandSlots_ServerRpc(ulong playerID, int slotChange)
+        public void UpdateSPHandSlots_C2SMessage(int slotChange, ulong clientId)
         {
             if (LethalPlugin.ReservedSlots)
                 return;
-
-            // Send the request to all clients
-            SetPlayerHandslots_ClientRpc(playerID, slotChange);
+            
+            LethalPlugin.Log.LogInfo($"C2S Received update for Player {clientId} to add {slotChange} slots");
+            
+            updatePlayerHandSlotsServerMessage.SendAllClients(new PlayerHandSlotData(clientId, slotChange));
         }
 
-        [ClientRpc]
-        public void SetPlayerHandslots_ClientRpc(ulong playerID, int slotChange)
+        public void UpdatePlayerHandSlots_S2CMessage(PlayerHandSlotData data)
         {
-            SetHandSlot(playerID, slotChange);
+            LethalPlugin.Log.LogInfo($"S2C Received update for Player {data.clientId} to add {data.additionalSlots} slots");
+            SetHandSlot(data.clientId, data.additionalSlots);
         }
 
-        public void SetHandSlot(ulong playerID, int newSlots)
+        public void SetHandSlot(ulong playerID, int additionalSlots)
         {
             foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
             {
                 if (player.playerClientId == playerID)
                 {
-                    int newAmount = 4 + newSlots;
+                    int newAmount = 4 + additionalSlots;
                     List<GrabbableObject> objects = player.ItemSlots.ToList<GrabbableObject>();
 
                     if (player.currentItemSlot > newAmount - 1)
@@ -301,45 +436,28 @@ namespace LethalProgression
         }
 
         // When joining.
-        [ServerRpc(RequireOwnership = false)]
-        public void GetEveryoneHandSlots_ServerRpc()
+        public void RefreshAllPlayerHandSlots_C2SEvent(ulong clientId)
         {
             if (LethalPlugin.ReservedSlots)
                 return;
 
             if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.HandSlot))
-            {
                 return;
-            }
 
             // Compile a list of all players and their handslots.
             foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
             {
                 if (!player.gameObject.activeSelf)
                     continue;
+
                 ulong playerID = player.playerClientId;
-                int handSlots = player.ItemSlots.Length - 4;
-                SendEveryoneHandSlots_ClientRpc(playerID, handSlots);
+                int additionalSlots = player.ItemSlots.Length - 4;
+
+                updatePlayerHandSlotsServerMessage.SendAllClients(new PlayerHandSlotData(playerID, additionalSlots));
             }
         }
 
-        [ClientRpc]
-        public void SendEveryoneHandSlots_ClientRpc(ulong playerID, int handSlots)
-        {
-            SetHandSlot(playerID, handSlots);
-        }
-
-        // CONFIGS
-        [ServerRpc(RequireOwnership = false)]
-        public void PlayerConnect_ServerRpc()
-        {
-            IDictionary<string, string> configDict = LethalPlugin.Instance.GetAllConfigEntries();
-            string serializedConfig = JsonConvert.SerializeObject(configDict);
-            SendEveryoneConfigs_ClientRpc(serializedConfig);
-        }
-
-        [ClientRpc]
-        public void SendEveryoneConfigs_ClientRpc(string serializedConfig)
+        public void SendHostConfig_S2CMessage(string serializedConfig)
         {
             IDictionary<string, string> configs = JsonConvert.DeserializeObject<IDictionary<string, string>>(serializedConfig);
             // Apply configs.
@@ -353,6 +471,7 @@ namespace LethalProgression
             {
                 Initialized = true;
                 LP_NetworkManager.xpInstance = this;
+                
                 skillList = new SkillList();
                 skillList.InitializeSkills();
 
@@ -364,41 +483,44 @@ namespace LethalProgression
                 guiObj = new SkillsGUI();
                 teamLootLevel.OnValueChanged += guiObj.TeamLootHudUpdate;
 
-                skillPoints = xpLevel.Value + 5;
+                skillPoints = teamLevel.Value + 5;
 
-                GetEveryoneHandSlots_ServerRpc();
+                calculateAllPlayersHandSlotsClientEvent.InvokeServer();
 
-                ChangeXPRequirement_ServerRpc();
+                evaluateXPRequirementClientEvent.InvokeServer();
             }
         }
 
-        // Saving
-        [ServerRpc(RequireOwnership = false)]
-        public void SaveData_ServerRpc(ulong steamID, string saveData)
-        {
-            LethalPlugin.Log.LogInfo($"Received SaveData request for {steamID} with data -> {saveData}");
-
-            SaveManager.Save(steamID, saveData);
-            SaveManager.SaveShared(xpPoints.Value, xpLevel.Value, profit.Value);
-        }
-
         // Loading
-        [ServerRpc(RequireOwnership = false)]
-        public void RequestSavedData_ServerRpc(ulong steamID)
+        public void RequestSavedData_C2SMessage(ulong steamID, ulong clientId)
         {
             string saveData = SaveManager.LoadPlayerFile(steamID);
-            SendSavedData_ClientRpc(saveData);
+
+            PlayerControllerB player = clientId.GetPlayerController();
+
+            sendProfileDataServerMessage.SendClient(saveData, player.actualClientId);
         }
 
-        [ClientRpc]
-        public void SendSavedData_ClientRpc(string saveData)
+        public void LoadProfileData_S2CMessage(string saveData)
         {
+            LethalPlugin.Log.LogInfo($"Received LoadProfileData_S2CMessage -> {saveData}");
+
             if (saveData == null)
             {
                 return;
             }
 
-            LoadLocalData(saveData);
+            StartCoroutine(LoadProfileData(saveData));
+        }
+
+        public void SaveProfileData_C2SMessage(string data, ulong clientId)
+        {
+            SaveProfileData profileData = JsonConvert.DeserializeObject<SaveProfileData>(data);
+
+            LethalPlugin.Log.LogInfo($"Received SaveData request for {profileData.steamId} with data -> {JsonConvert.SerializeObject(profileData.saveData)}");
+
+            SaveManager.Save(profileData.steamId, profileData.saveData);
+            SaveManager.SaveShared(teamXP.Value, teamLevel.Value, teamTotalValue.Value);
         }
     }
 }

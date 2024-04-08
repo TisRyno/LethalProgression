@@ -1,14 +1,15 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using LethalProgression.Skills;
 using LethalProgression.GUI;
-using Steamworks;
 using GameNetcodeStuff;
 using LethalProgression.Saving;
+using Steamworks;
+using Unity.Netcode;
 
 namespace LethalProgression.Patches
 {
     [HarmonyPatch]
-    internal class XPPatches
+    internal class XPPatches : NetworkBehaviour
     {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(StartOfRound), "FirePlayersAfterDeadlineClientRpc")]
@@ -18,16 +19,18 @@ namespace LethalProgression.Patches
             int saveFileNum = GameNetworkManager.Instance.saveFileNum + 1;
             SaveManager.DeleteSave(saveFileNum);
 
-            xpInstance.xpReq.Value = xpInstance.GetXPRequirement();
+            xpInstance.teamXPRequired.Value = xpInstance.CalculateXPRequirement();
             foreach (Skill skill in xpInstance.skillList.skills.Values)
             {
                 skill.SetLevel(0);
             }
 
             xpInstance.SetSkillPoints(5);
-            xpInstance.xpLevel.Value = 0;
-            xpInstance.xpPoints.Value = 0;
-            xpInstance.profit.Value = 0;
+
+            xpInstance.teamXP.Value = 0;
+            xpInstance.teamTotalValue.Value = 0;
+            xpInstance.teamLevel.Value = 0;
+
             xpInstance.teamLootLevel.Value = 0;
         }
 
@@ -39,7 +42,7 @@ namespace LethalProgression.Patches
             {
                 int localLootLevel = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].GetLevel();
 
-                LP_NetworkManager.xpInstance.TeamLootLevelUpdate(-localLootLevel);
+                LP_NetworkManager.xpInstance.updateTeamLootLevelClientMessage.SendServer(-localLootLevel);
             }
 
             SprintSpeed.sprintSpeed = 2.25f;
@@ -49,14 +52,14 @@ namespace LethalProgression.Patches
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(PlayerControllerB), "SendNewPlayerValuesClientRpc")]
-        private static void PlayerLoadedXPHandler(StartOfRound __instance)
-        {
+        [HarmonyPatch(typeof(PlayerControllerB), "ConnectClientToPlayerObject")]
+        private static void ConnectClientToPlayerObjectHandler()
+        {   
             ulong steamID = SteamClient.SteamId;
-            LethalPlugin.Log.LogInfo($"Player {steamID} has joined the game.");
-            LP_NetworkManager.xpInstance.RequestSavedData_ServerRpc(steamID);
 
-            LP_NetworkManager.xpInstance.guiObj.UpdateAllStats();
+            LethalPlugin.Log.LogInfo($"Player {steamID} has joined the game.");
+
+            LP_NetworkManager.xpInstance.requestProfileDataClientMessage.SendServer(steamID);
         }
 
         [HarmonyPostfix]
@@ -68,7 +71,7 @@ namespace LethalProgression.Patches
                 return;
             }
 
-            LP_NetworkManager.xpInstance.xpReq.Value = LP_NetworkManager.xpInstance.GetXPRequirement();
+            LP_NetworkManager.xpInstance.teamXPRequired.Value = LP_NetworkManager.xpInstance.CalculateXPRequirement();
         }
     }
 }

@@ -28,7 +28,11 @@ namespace LethalProgression.Skills
 
             // Tell the server we've updated our hand slots.
             ulong playerID = GameNetworkManager.Instance.localPlayerController.playerClientId;
-            xpInstance.ServerHandSlots_ServerRpc(playerID, slotsToAdd);
+
+            LethalPlugin.Log.LogInfo($"Updating Player HandSlot {playerID}");
+
+            xpInstance.updateSPHandSlotsClientMessage.SendServer(slotsToAdd);
+
         }
 
         public static void UpdateHudSlots()

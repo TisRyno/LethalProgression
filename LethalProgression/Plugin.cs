@@ -5,12 +5,12 @@ using BepInEx.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Logging;
-using System.Reflection;
 using BepInEx.Bootstrap;
 using LethalProgression.Config;
 
 namespace LethalProgression
 {
+    [BepInDependency("LethalNetworkAPI")]
     [BepInPlugin("Stoneman.LethalProgression", "Lethal Progression", "1.6.0")]
     internal class LethalPlugin : BaseUnityPlugin
     {
@@ -30,9 +30,9 @@ namespace LethalProgression
             Instance = this;
 
             var harmony = new Harmony(modGUID);
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            harmony.PatchAll();
 
-            skillBundle = AssetBundle.LoadFromMemory(LethalProgression.Properties.Resources.skillmenu);
+            skillBundle = AssetBundle.LoadFromMemory(Properties.Resources.skillmenu);
 
             Log = Logger;
 
@@ -61,21 +61,6 @@ namespace LethalProgression
                                 ReservedSlots = true;
                             }
                         }
-                    }
-                }
-            }
-
-            // Network patcher!
-            var types = Assembly.GetExecutingAssembly().GetTypes();
-            foreach (var type in types)
-            {
-                var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-                foreach (var method in methods)
-                {
-                    var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
-                    if (attributes.Length > 0)
-                    {
-                        method.Invoke(null, null);
                     }
                 }
             }

@@ -47,11 +47,11 @@ namespace LethalProgression.Patches
             // XP Text. Values of how much XP you need to level up.
             // XP Level, which is just the level you're on.
             // Profit, which is how much money you've made.
-            _xpText.text = xpInstance.GetXP().ToString() + " / " + xpInstance.xpReq.Value.ToString();
+            _xpText.text = xpInstance.GetXP().ToString() + " / " + xpInstance.teamXPRequired.Value.ToString();
             _xpLevel.text = "Level: " + xpInstance.GetLevel().ToString();
             _profit.text = "You've made.. " + xpInstance.GetProfit().ToString() + "$";
             // Set the bar fill
-            _xpBarProgress.GetComponent<Image>().fillAmount = xpInstance.GetXP() / (float)xpInstance.xpReq.Value;
+            _xpBarProgress.GetComponent<Image>().fillAmount = xpInstance.GetXP() / (float)xpInstance.teamXPRequired.Value;
         }
 
         public static void MakeNewXPBar()

@@ -1,13 +1,39 @@
 ﻿using UnityEngine;
 using Newtonsoft.Json;
+using Steamworks;
 using System.IO;
+using System.Collections.Generic;
+using LethalProgression.Skills;
+using LethalProgression.Network;
 
 namespace LethalProgression.Saving
 {
     internal static class SaveManager
     {
         public static int saveFileSlot = 0;
-        public static void Save(ulong steamid, string data)
+
+        public static void TriggerHostProfileSave()
+        {
+            ulong _steamId = SteamClient.SteamId;
+
+            SaveData saveData = new SaveData
+            {
+                steamId = _steamId,
+                skillPoints = LP_NetworkManager.xpInstance.skillPoints
+            };
+
+            foreach (KeyValuePair<UpgradeType, Skill> skill in LP_NetworkManager.xpInstance.skillList.skills)
+            {
+                LethalPlugin.Log.LogInfo($"Skill is {skill.Key} and value is {skill.Value.GetLevel()}");
+                saveData.skillAllocation.Add(skill.Key, skill.Value.GetLevel());
+            }
+            
+            LethalPlugin.Log.LogInfo($"Invoke saveProfileDataClientMessage({_steamId}, {JsonConvert.SerializeObject(saveData)})");
+
+            LP_NetworkManager.xpInstance.saveProfileDataClientMessage.SendServer(JsonConvert.SerializeObject(new SaveProfileData(_steamId, saveData)));
+        }
+
+        public static void Save(ulong steamid, SaveData data)
         {
             saveFileSlot = GameNetworkManager.Instance.saveFileNum;
 
@@ -19,7 +45,7 @@ namespace LethalProgression.Saving
                 Directory.CreateDirectory(GetSavePath());
             }
 
-            File.WriteAllText(GetSavePath() + steamid + ".json", data);
+            File.WriteAllText(GetSavePath() + steamid + ".json", JsonConvert.SerializeObject(data));
         }
 
         public static void SaveShared(int xp, int level, int quota)
@@ -64,9 +90,7 @@ namespace LethalProgression.Saving
 
             LethalPlugin.Log.LogInfo($"Player file for {steamId} found");
 
-            string json = File.ReadAllText(GetSavePath() + steamId + ".json");
-
-            return json;
+            return File.ReadAllText(GetSavePath() + steamId + ".json");
         }
 
         public static SaveSharedData LoadSharedFile()

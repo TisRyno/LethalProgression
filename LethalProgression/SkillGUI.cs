@@ -13,6 +13,7 @@ namespace LethalProgression.GUI
     {
         public static bool isMenuOpen = false;
         public static SkillsGUI guiInstance;
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(QuickMenuManager), "Update")]
         private static void SkillMenuUpdate(QuickMenuManager __instance)
@@ -133,16 +134,10 @@ namespace LethalProgression.GUI
             backButton.GetComponent<Button>().onClick = new Button.ButtonClickedEvent();
             backButton.GetComponent<Button>().onClick.AddListener(BackButton);
 
-            //////////////////////////////////////////////////
-            /// Different upgrade buttons:
-            //////////////////////////////////////////////////
             shownSkills = 0;
 
             if (LP_NetworkManager.xpInstance.skillList.skills == null)
-            {
-                //LethalPlugin.Log.LogInfo("Skill list is null!");
                 return;
-            }
 
             foreach (KeyValuePair<UpgradeType, Skill> skill in LP_NetworkManager.xpInstance.skillList.skills)
             {
@@ -155,7 +150,7 @@ namespace LethalProgression.GUI
                 LoadSkillData(skill.Value, skillButton);
             }
 
-            TeamLootHudUpdate(1, 1);
+            TeamLootHudUpdate(0);
         }
 
         public void BackButton()
@@ -167,6 +162,7 @@ namespace LethalProgression.GUI
             GameObject playerList = GameObject.Find("Systems/UI/Canvas/QuickMenu/PlayerList");
             playerList.SetActive(true);
         }
+
         public void SetUnspec(bool show)
         {
             GameObject minusFive = infoPanel.transform.GetChild(6).gameObject;
@@ -188,7 +184,8 @@ namespace LethalProgression.GUI
                 unSpecHelpText.transform.GetComponent<TextMeshProUGUI>().SetText("Return to orbit to unspec.");
             }
         }
-        public GameObject SetupUpgradeButton(LethalProgression.Skills.Skill skill)
+
+        public GameObject SetupUpgradeButton(Skill skill)
         {
             GameObject templateButton = mainPanel.transform.GetChild(0).gameObject;
             GameObject button = GameObject.Instantiate(templateButton);
@@ -270,7 +267,6 @@ namespace LethalProgression.GUI
                 upgradeAmt.SetText($"{skill.GetLevel()} / {skill.GetMaxLevel()}");
             }
 
-            //upgradeAmt.SetText(skill.GetLevel().ToString());
             upgradeDesc.SetText(skill.GetDescription());
 
             // Make all the buttons do something:
@@ -304,31 +300,25 @@ namespace LethalProgression.GUI
         public void AddSkillPoint(Skill skill, int amt)
         {
             if (LP_NetworkManager.xpInstance.GetSkillPoints() <= 0)
-            {
                 return;
-            }
 
             int skillPoints = LP_NetworkManager.xpInstance.GetSkillPoints();
 
             if (skillPoints < amt)
-            {
                 amt = skillPoints;
-            }
 
             if (skill.GetLevel() + amt > skill.GetMaxLevel())
-            {
                 amt = skill.GetMaxLevel() - skill.GetLevel();
-            }
+
+            // Remove skill points first to stop desync
+            LP_NetworkManager.xpInstance.SetSkillPoints(LP_NetworkManager.xpInstance.GetSkillPoints() - amt);
 
             skill.AddLevel(amt);
-            LP_NetworkManager.xpInstance.SetSkillPoints(LP_NetworkManager.xpInstance.GetSkillPoints() - amt);
             UpdateStatInfo(skill);
 
             foreach (var button in skillButtonsList)
-            {
                 if (button.name == skill.GetShortName())
                     LoadSkillData(skill, button);
-            }
         }
 
         public void RemoveSkillPoint(Skill skill, int amt)
@@ -343,6 +333,7 @@ namespace LethalProgression.GUI
             }
 
             skill.AddLevel(-amt);
+            
             LP_NetworkManager.xpInstance.SetSkillPoints(LP_NetworkManager.xpInstance.GetSkillPoints() + amt);
             UpdateStatInfo(skill);
 
@@ -354,7 +345,7 @@ namespace LethalProgression.GUI
         }
 
         // START SPECIAL BOYS:
-        public void TeamLootHudUpdate(int oldValue, int newValue)
+        public void TeamLootHudUpdate(int newValue)
         {
             foreach (var button in skillButtonsList)
             {
@@ -371,7 +362,7 @@ namespace LethalProgression.GUI
                     button.GetComponentInChildren<TextMeshProUGUI>().SetText($"{skill.GetShortName()}:");
 
                     float mult = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].GetMultiplier();
-                    float value = LP_NetworkManager.xpInstance.teamLootLevel.Value * mult;
+                    float value = newValue * mult;
 
                     GameObject attributeLabel = button.transform.GetChild(2).gameObject;
                     attributeLabel.GetComponent<TextMeshProUGUI>().SetText($"(+{value}% {skill.GetAttribute()})");

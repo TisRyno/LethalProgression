@@ -37,7 +37,7 @@ namespace LethalProgression.Skills
             if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.Value))
                 return;
 
-            LP_NetworkManager.xpInstance.TeamLootLevelUpdate(change);
+            LP_NetworkManager.xpInstance.updateTeamLootLevelClientMessage.SendServer(change);
         }
     }
 }
