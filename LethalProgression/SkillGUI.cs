@@ -332,16 +332,15 @@ namespace LethalProgression.GUI
                 amt = allocatedPoints;
             }
 
-            skill.AddLevel(-amt);
-            
+            // Add skill points first to stop desync
             LP_NetworkManager.xpInstance.SetSkillPoints(LP_NetworkManager.xpInstance.GetSkillPoints() + amt);
+
+            skill.AddLevel(-amt);
             UpdateStatInfo(skill);
 
             foreach (var button in skillButtonsList)
-            {
                 if (button.name == skill.GetShortName())
                     LoadSkillData(skill, button);
-            }
         }
 
         // START SPECIAL BOYS:
