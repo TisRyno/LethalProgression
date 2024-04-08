@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using LethalProgression.Config;
 using System.Globalization;
+using LethalProgression.Saving;
 
 namespace LethalProgression.Skills
 {
@@ -15,7 +16,7 @@ namespace LethalProgression.Skills
         Oxygen,
         JumpHeight,
         SprintSpeed,
-        Strength
+        Strength,
     }
 
     internal class SkillList
@@ -68,7 +69,6 @@ namespace LethalProgression.Skills
         {
             if (bool.Parse(SkillConfig.hostConfig["Health Regen Enabled"]))
             {
-                LethalPlugin.Log.LogInfo("HP Regen check 1");
                 CreateSkill(UpgradeType.HPRegen,
                     "Health Regen",
                     "The company installs a basic healer into your suit, letting you regenerate health slowly. Only regenerate up to 100 HP.",
@@ -76,7 +76,8 @@ namespace LethalProgression.Skills
                     "Health Regeneration",
                     1,
                     int.Parse(SkillConfig.hostConfig["Health Regen Max Level"]),
-                    float.Parse(SkillConfig.hostConfig["Health Regen Multiplier"], CultureInfo.InvariantCulture));
+                    float.Parse(SkillConfig.hostConfig["Health Regen Multiplier"], CultureInfo.InvariantCulture)
+                );
             }
 
             if (bool.Parse(SkillConfig.hostConfig["Stamina Enabled"]))
@@ -89,7 +90,8 @@ namespace LethalProgression.Skills
                     1,
                     int.Parse(SkillConfig.hostConfig["Stamina Max Level"]),
                     float.Parse(SkillConfig.hostConfig["Stamina Multiplier"], CultureInfo.InvariantCulture),
-                    Stamina.StaminaUpdate);
+                    Stamina.StaminaUpdate
+                );
             }
 
             if (bool.Parse(SkillConfig.hostConfig["Battery Life Enabled"]))
@@ -101,20 +103,22 @@ namespace LethalProgression.Skills
                     "Battery Life",
                     1,
                     int.Parse(SkillConfig.hostConfig["Battery Life Max Level"]),
-                    float.Parse(SkillConfig.hostConfig["Battery Life Multiplier"], CultureInfo.InvariantCulture));
+                    float.Parse(SkillConfig.hostConfig["Battery Life Multiplier"], CultureInfo.InvariantCulture)
+                );
             }
 
             if (bool.Parse(SkillConfig.hostConfig["Hand Slots Enabled"]) && !LethalPlugin.ReservedSlots)
             {
                  CreateSkill(UpgradeType.HandSlot,
-                     "Hand Slot",
-                     "The company finally gives you a better belt! Fit more stuff! (One slot every 100%.)",
-                     "HND",
-                     "Hand Slots",
-                     1,
-                     int.Parse(SkillConfig.hostConfig["Hand Slots Max Level"]),
-                     float.Parse(SkillConfig.hostConfig["Hand Slots Multiplier"], CultureInfo.InvariantCulture),
-                     HandSlots.HandSlotsUpdate);
+                    "Hand Slot",
+                    "The company finally gives you a better belt! Fit more stuff! (One slot every 100%.)",
+                    "HND",
+                    "Hand Slots",
+                    1,
+                    int.Parse(SkillConfig.hostConfig["Hand Slots Max Level"]),
+                    float.Parse(SkillConfig.hostConfig["Hand Slots Multiplier"], CultureInfo.InvariantCulture),
+                    HandSlots.HandSlotsUpdate
+                );
             }
 
             if (bool.Parse(SkillConfig.hostConfig["Loot Value Enabled"]))
@@ -127,7 +131,9 @@ namespace LethalProgression.Skills
                     1,
                     int.Parse(SkillConfig.hostConfig["Loot Value Max Level"]),
                     float.Parse(SkillConfig.hostConfig["Loot Value Multiplier"], CultureInfo.InvariantCulture),
-                    LootValue.LootValueUpdate);
+                    LootValue.LootValueUpdate,
+                    true
+                );
             }
 
             if (bool.Parse(SkillConfig.hostConfig["Oxygen Enabled"]))
@@ -139,7 +145,8 @@ namespace LethalProgression.Skills
                     "Extra Oxygen",
                     1,
                     int.Parse(SkillConfig.hostConfig["Oxygen Max Level"]),
-                    float.Parse(SkillConfig.hostConfig["Oxygen Multiplier"], CultureInfo.InvariantCulture));
+                    float.Parse(SkillConfig.hostConfig["Oxygen Multiplier"], CultureInfo.InvariantCulture)
+                );
             }
 
             if (bool.Parse(SkillConfig.hostConfig["Strength Enabled"]))
@@ -152,7 +159,8 @@ namespace LethalProgression.Skills
                     1,
                     int.Parse(SkillConfig.hostConfig["Strength Max Level"]),
                     float.Parse(SkillConfig.hostConfig["Strength Multiplier"], CultureInfo.InvariantCulture),
-                    Strength.StrengthUpdate);
+                    Strength.StrengthUpdate
+                );
             }
 
             if (bool.Parse(SkillConfig.hostConfig["Jump Height Enabled"]))
@@ -165,7 +173,8 @@ namespace LethalProgression.Skills
                     1,
                     int.Parse(SkillConfig.hostConfig["Jump Height Max Level"]),
                     float.Parse(SkillConfig.hostConfig["Jump Height Multiplier"], CultureInfo.InvariantCulture),
-                    JumpHeight.JumpHeightUpdate);
+                    JumpHeight.JumpHeightUpdate
+                );
             }
 
             if (!LethalPlugin.MikesTweaks && bool.Parse(SkillConfig.hostConfig["Sprint Speed Enabled"]))
@@ -178,7 +187,8 @@ namespace LethalProgression.Skills
                     1,
                     int.Parse(SkillConfig.hostConfig["Sprint Speed Max Level"]),
                     float.Parse(SkillConfig.hostConfig["Sprint Speed Multiplier"], CultureInfo.InvariantCulture),
-                    SprintSpeed.SprintSpeedUpdate);
+                    SprintSpeed.SprintSpeedUpdate
+                );
             }
         }
     }
@@ -263,20 +273,25 @@ namespace LethalProgression.Skills
             return _multiplier * _level;
         }
 
-        public void SetLevel(int newLevel)
+        public void SetLevel(int newLevel, bool triggerHostProfileSave = true)
         {
+            int oldLevel = _level;
+
             _level = newLevel;
             // level is number of changes
-            int changes = newLevel - _level;
-            _callback?.Invoke(changes);
+            _callback?.Invoke(newLevel - oldLevel);
+
+            if (triggerHostProfileSave)
+                SaveManager.TriggerHostProfileSave();
         }
 
         public void AddLevel(int change)
         {
             _level += change;
-            int newLevel = _level;
 
             _callback?.Invoke(change);
+
+            SaveManager.TriggerHostProfileSave();
         }
     }
 }

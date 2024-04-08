@@ -1,10 +1,6 @@
 ﻿using HarmonyLib;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,12 +29,12 @@ namespace LethalProgression.Patches
             { "Puffer (EnemyType)", 15 },
         };
 
-        //[HarmonyPostfix]
-        //[HarmonyPatch(typeof(HUDManager), "PingScan_performed")]
-        //private static void DebugScan()
-        //{
-        //    LethalProgression.XPHandler.xpInstance.AddXPServerRPC(10);
-        //}
+        // [HarmonyPostfix]
+        // [HarmonyPatch(typeof(HUDManager), "PingScan_performed")]
+        // private static void DebugScan()
+        // {
+        //    LP_NetworkManager.xpInstance.updateTeamXPClientMessage.SendServer(10);
+        // }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(HUDManager), "AddNewScrapFoundToDisplay")]
@@ -51,32 +47,38 @@ namespace LethalProgression.Patches
             int scrapCost = GObject.scrapValue;
 
             // Give XP for the amount of money this scrap costs.
-            LP_NetworkManager.xpInstance.AddXPServerRPC(scrapCost);
+            LP_NetworkManager.xpInstance.updateTeamXPClientMessage.SendServer(scrapCost);
         }
+        
         [HarmonyPostfix]
         [HarmonyPatch(typeof(EnemyAI), "KillEnemy")]
         private static void GiveXPForKill(EnemyAI __instance)
         {
             string enemyType = __instance.enemyType.ToString();
             LethalPlugin.Log.LogInfo("Enemy type: " + enemyType);
+            
             // Give XP for the amount of money this scrap costs.
             int enemyReward = 30;
             if (_enemyReward.ContainsKey(enemyType))
             {
                 enemyReward = _enemyReward[enemyType];
             }
-            LP_NetworkManager.xpInstance.AddXPServerRPC(enemyReward);
+
+            LP_NetworkManager.xpInstance.updateTeamXPClientMessage.SendServer(enemyReward);
         }
-        public static void ShowXPUpdate(int oldXP, int newXP, int xp)
+
+        public static void ShowXPUpdate()
         {
             // Makes one if it doesn't exist on screen yet.
             if (!_tempBar)
                 MakeBar();
+            
+            LC_XP xpInstance = LP_NetworkManager.xpInstance;
 
             GameObject _tempprogress = GameObject.Find("/Systems/UI/Canvas/IngamePlayerHUD/BottomMiddle/XPUpdate/XPBarProgress");
 
-            _tempprogress.GetComponent<Image>().fillAmount = newXP / (float)LP_NetworkManager.xpInstance.GetXPRequirement();
-            _tempText.text = newXP + " / " + (float)LP_NetworkManager.xpInstance.GetXPRequirement();
+            _tempprogress.GetComponent<Image>().fillAmount = xpInstance.teamXP.Value / (float)xpInstance.CalculateXPRequirement();
+            _tempText.text = xpInstance.teamXP.Value + " / " + (float)xpInstance.CalculateXPRequirement();
 
             _tempBarTime = 2f;
 

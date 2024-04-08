@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using HarmonyLib;
-using Unity.Netcode;
+﻿using HarmonyLib;
 
 namespace LethalProgression.Skills
 {
@@ -19,7 +15,10 @@ namespace LethalProgression.Skills
             if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.Value))
                 return;
 
-            float scrapValueAdded = LP_NetworkManager.xpInstance.teamLootValue.Value / 100;
+            float mult = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].GetMultiplier();
+            float value = LP_NetworkManager.xpInstance.teamLootLevel.Value * mult;
+
+            float scrapValueAdded = value / 100;
 
             try
             {
@@ -38,7 +37,7 @@ namespace LethalProgression.Skills
             if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.Value))
                 return;
 
-            LP_NetworkManager.xpInstance.TeamLootValueUpdate(change);
+            LP_NetworkManager.xpInstance.updateTeamLootLevelClientMessage.SendServer(change);
         }
     }
 }

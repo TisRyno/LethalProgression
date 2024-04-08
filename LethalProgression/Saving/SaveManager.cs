@@ -1,19 +1,43 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Newtonsoft.Json;
-using System.IO;
 using Steamworks;
+using System.IO;
+using System.Collections.Generic;
+using LethalProgression.Skills;
+using LethalProgression.Network;
 
 namespace LethalProgression.Saving
 {
     internal static class SaveManager
     {
         public static int saveFileSlot = 0;
-        public static void Save(ulong steamid, string data)
+
+        public static void TriggerHostProfileSave()
+        {
+            ulong _steamId = SteamClient.SteamId;
+
+            SaveData saveData = new SaveData
+            {
+                steamId = _steamId,
+                skillPoints = LP_NetworkManager.xpInstance.skillPoints
+            };
+
+            foreach (KeyValuePair<UpgradeType, Skill> skill in LP_NetworkManager.xpInstance.skillList.skills)
+            {
+                LethalPlugin.Log.LogInfo($"Skill is {skill.Key} and value is {skill.Value.GetLevel()}");
+                saveData.skillAllocation.Add(skill.Key, skill.Value.GetLevel());
+            }
+            
+            LethalPlugin.Log.LogInfo($"Invoke saveProfileDataClientMessage({_steamId}, {JsonConvert.SerializeObject(saveData)})");
+
+            LP_NetworkManager.xpInstance.saveProfileDataClientMessage.SendServer(JsonConvert.SerializeObject(new SaveProfileData(_steamId, saveData)));
+        }
+
+        public static void Save(ulong steamid, SaveData data)
         {
             saveFileSlot = GameNetworkManager.Instance.saveFileNum;
 
-            LethalPlugin.Log.LogInfo("Saving to slot " + saveFileSlot + 1);
+            LethalPlugin.Log.LogInfo($"Saving to slot {saveFileSlot + 1} in {GetSavePath()}");
 
             // If file doesn't exist, create it
             if (!Directory.Exists(GetSavePath()))
@@ -21,7 +45,7 @@ namespace LethalProgression.Saving
                 Directory.CreateDirectory(GetSavePath());
             }
 
-            File.WriteAllText(GetSavePath() + steamid + ".json", data);
+            File.WriteAllText(GetSavePath() + steamid + ".json", JsonConvert.SerializeObject(data));
         }
 
         public static void SaveShared(int xp, int level, int quota)
@@ -54,21 +78,22 @@ namespace LethalProgression.Saving
             return Application.persistentDataPath + "/lethalprogression/save" + (saveFileSlot + 1) + "/";
         }
 
-        public static string Load(ulong steamId)
+        public static string LoadPlayerFile(ulong steamId)
         {
             saveFileSlot = GameNetworkManager.Instance.saveFileNum;
 
             if (!File.Exists(GetSavePath() + steamId + ".json"))
             {
+                LethalPlugin.Log.LogInfo($"Player file for {steamId} doesn't exist");
                 return null;
             }
 
-            string json = File.ReadAllText(GetSavePath() + steamId + ".json");
+            LethalPlugin.Log.LogInfo($"Player file for {steamId} found");
 
-            return json;
+            return File.ReadAllText(GetSavePath() + steamId + ".json");
         }
 
-        public static SaveSharedData LoadShared()
+        public static SaveSharedData LoadSharedFile()
         {
             saveFileSlot = GameNetworkManager.Instance.saveFileNum;
 
@@ -78,8 +103,10 @@ namespace LethalProgression.Saving
                 return null;
             }
 
-            string json = File.ReadAllText(GetSavePath() + "shared.json");
             LethalPlugin.Log.LogInfo("Shared file exists");
+
+            string json = File.ReadAllText(GetSavePath() + "shared.json");
+
             return JsonConvert.DeserializeObject<SaveSharedData>(json);
         }
     }
