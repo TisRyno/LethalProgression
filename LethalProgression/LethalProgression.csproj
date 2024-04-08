@@ -129,13 +129,6 @@
       </EmbeddedResource>
     </ItemGroup>
 
-    <!-- https://github.com/EvaisaDev/UnityNetcodePatcher#usage-as-a-post-build-event -->
-    <!-- Syntax to use the tool installed globally -->
-    <!-- Allows to patch elements like networked behaviours, RPCs, etc. -->
-    <!-- <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
-        <Exec Command="netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')"/>
-    </Target> -->
-
     <!-- On CI build, the assemblies are downloaded from NuGet -->
     <ItemGroup Condition="$(CI) == 'true'">
         <PackageReference Include="LethalCompany.GameLibs.Steam" Version="$(GameVersion)" PrivateAssets="all" />
@@ -160,7 +153,7 @@
 
     <!-- Build the plugin for Thunderstore publication -->
     <!-- The command will create a zip file in the target directory using the thunderstore.toml file -->
-    <Target Condition="'$(BuildThunderstorePackage)' == 'true'" Name="ThunderstoreBuild" AfterTargets="PostBuildEvent" DependsOnTargets="MinVer;NetcodePatch">
+    <Target Condition="'$(BuildThunderstorePackage)' == 'true'" Name="ThunderstoreBuild" AfterTargets="PostBuildEvent" DependsOnTargets="MinVer">
         <PropertyGroup>
             <PluginVersion>$(MinVerMajor).$(MinVerMinor).$(MinVerPatch)</PluginVersion>
         </PropertyGroup>
