@@ -11,12 +11,12 @@ using LethalProgression.Config;
 namespace LethalProgression
 {
     [BepInDependency("LethalNetworkAPI")]
-    [BepInPlugin("Stoneman.LethalProgression", "Lethal Progression", "1.6.0")]
+    [BepInPlugin("Stoneman.LethalProgression", "Lethal Progression", "1.7.0")]
     internal class LethalPlugin : BaseUnityPlugin
     {
         private const string modGUID = "Stoneman.LethalProgression";
         private const string modName = "Lethal Progression";
-        private const string modVersion = "1.6.0";
+        private const string modVersion = "1.7.0";
         private const string modAuthor = "Stoneman";
         public static AssetBundle skillBundle;
 
