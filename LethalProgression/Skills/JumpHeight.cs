@@ -1,4 +1,6 @@
 ﻿using GameNetcodeStuff;
+using LethalProgression.Network;
+using Newtonsoft.Json;
 
 namespace LethalProgression.Skills
 {
@@ -12,12 +14,18 @@ namespace LethalProgression.Skills
             if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.JumpHeight))
                 return;
 
-            Skill skill = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.JumpHeight];
             PlayerControllerB localPlayer = GameNetworkManager.Instance.localPlayerController;
-            // 5 is 100%. So if 1 level adds 1% more, then it is 5 * 1.01.
-            float addedJump = (updatedValue * skill.GetMultiplier() / 100f) * 5f;
-            localPlayer.jumpForce += addedJump;
-            LethalPlugin.Log.LogInfo($"{updatedValue} change, Adding {addedJump} resulting in {localPlayer.jumpForce} jump force");
+            Skill skill = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.JumpHeight];
+
+            PlayerJumpHeightData networkData = new PlayerJumpHeightData()
+            {
+                clientId = localPlayer.playerClientId,
+                jumpSkillValue = skill.GetLevel()
+            };
+
+            LethalPlugin.Log.LogInfo($"Jump skill now {updatedValue}, sending to Server");
+            
+            LP_NetworkManager.xpInstance.updatePlayerJumpForceClientMessage.SendServer(networkData);
         }
     }
 }

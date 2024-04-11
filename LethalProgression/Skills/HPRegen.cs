@@ -11,7 +11,10 @@ namespace LethalProgression.Skills
         [HarmonyPatch(typeof(PlayerControllerB), "LateUpdate")]
         private static void HPRegenUpdate(PlayerControllerB __instance)
         {
-            if (__instance.health >= 100)
+            if (!__instance.IsOwner || (__instance.IsServer && !__instance.isHostPlayerObject))
+                return;
+
+            if (!__instance.isPlayerControlled || __instance.health >= 100 || __instance.isPlayerDead)
                 return;
 
             if (!LP_NetworkManager.xpInstance.skillList.IsSkillListValid())
@@ -35,12 +38,13 @@ namespace LethalProgression.Skills
                 {
                     __instance.MakeCriticallyInjured(false);
                 }
+
                 HUDManager.Instance.UpdateHealthUI(__instance.health, false);
+
+                return;
             }
-            else
-            {
-                __instance.healthRegenerateTimer -= Time.deltaTime;
-            }
+            
+            __instance.healthRegenerateTimer -= Time.deltaTime;
         }
     }
 }

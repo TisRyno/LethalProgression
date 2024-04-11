@@ -17,18 +17,6 @@ namespace LethalProgression.Patches
         private static GameObject levelText;
         private static float levelTextTime;
 
-        private static Dictionary<string, int> _enemyReward = new Dictionary<string, int>()
-        {
-            { "HoarderBug (EnemyType)" , 30 },
-            { "BaboonBird (EnemyType)", 15},
-            { "MouthDog (EnemyType)", 200},
-            { "Centipede (EnemyType)", 30 },
-            { "Flowerman (EnemyType)", 200 },
-            { "SandSpider (EnemyType)", 50 },
-            { "Crawler (EnemyType)", 50 },
-            { "Puffer (EnemyType)", 15 },
-        };
-
         // [HarmonyPostfix]
         // [HarmonyPatch(typeof(HUDManager), "PingScan_performed")]
         // private static void DebugScan()
@@ -48,23 +36,6 @@ namespace LethalProgression.Patches
 
             // Give XP for the amount of money this scrap costs.
             LP_NetworkManager.xpInstance.updateTeamXPClientMessage.SendServer(scrapCost);
-        }
-        
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(EnemyAI), "KillEnemy")]
-        private static void GiveXPForKill(EnemyAI __instance)
-        {
-            string enemyType = __instance.enemyType.ToString();
-            LethalPlugin.Log.LogInfo("Enemy type: " + enemyType);
-            
-            // Give XP for the amount of money this scrap costs.
-            int enemyReward = 30;
-            if (_enemyReward.ContainsKey(enemyType))
-            {
-                enemyReward = _enemyReward[enemyType];
-            }
-
-            LP_NetworkManager.xpInstance.updateTeamXPClientMessage.SendServer(enemyReward);
         }
 
         public static void ShowXPUpdate()
