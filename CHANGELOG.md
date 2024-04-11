@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.2](https://github.com/TisRyno/LethalProgression/compare/v1.7.1...v1.7.2) (2024-04-11)
+
+
+### Bug Fixes
+
+* HP HUD updating for everyone when one player takes damage ([0ea240e](https://github.com/TisRyno/LethalProgression/commit/0ea240e11659ac0669f6f056d8cdfe2716e4b51f))
+* jump height not syncing for all players ([a035893](https://github.com/TisRyno/LethalProgression/commit/a0358934c4ff2c974325668e26161e07c9f7a497))
+
 ## [1.7.1](https://github.com/TisRyno/LethalProgression/compare/v1.7.0...v1.7.1) (2024-04-08)
 
 
