@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.3](https://github.com/TisRyno/LethalProgression/compare/v1.7.2...v1.7.3) (2024-04-11)
+
+
+### Bug Fixes
+
+* default jump height was incorrect ([1cbc7b8](https://github.com/TisRyno/LethalProgression/commit/1cbc7b841c0a1942dd660d35964192f19098b6fd))
+
 ## [1.7.2](https://github.com/TisRyno/LethalProgression/compare/v1.7.1...v1.7.2) (2024-04-11)
 
 
