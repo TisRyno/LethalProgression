@@ -542,9 +542,9 @@ namespace LethalProgression
             Skill skill = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.JumpHeight];
 
             // 10 is 100%. So if 1 level adds 1% more, then it is 10 * 1.01.
-            float addedJump = playerData.jumpSkillValue * skill.GetMultiplier() / 100f * 10f;
+            float addedJump = playerData.jumpSkillValue * skill.GetMultiplier() / 100f * 13f;
 
-            playerController.jumpForce = 10f + addedJump;
+            playerController.jumpForce = 13f + addedJump;
 
             LethalPlugin.Log.LogInfo($"Updating client {playerData.clientId} jump height. Adding {addedJump} resulting in {playerController.jumpForce} jump force");
         }
