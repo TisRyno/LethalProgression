@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.4](https://github.com/TisRyno/LethalProgression/compare/v1.7.3...v1.7.4) (2024-04-11)
+
+
+### Bug Fixes
+
+* actual default jump height (sorry) ([659bc0f](https://github.com/TisRyno/LethalProgression/commit/659bc0fcf878b150356c99f5e42f136bebcac66c))
+* jump height no longer resets on death or returning to lobby ([e57095a](https://github.com/TisRyno/LethalProgression/commit/e57095a44096966137b124b808fbace13094a03f))
+
 ## [1.7.3](https://github.com/TisRyno/LethalProgression/compare/v1.7.2...v1.7.3) (2024-04-11)
 
 
