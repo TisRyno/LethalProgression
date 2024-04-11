@@ -23,7 +23,7 @@ namespace LethalProgression.Skills
                 jumpSkillValue = skill.GetLevel()
             };
 
-            LethalPlugin.Log.LogInfo($"Jump skill now {updatedValue}, sending to Server");
+            LethalPlugin.Log.LogInfo($"Jump skill now {skill.GetLevel()}, sending to Server");
             
             LP_NetworkManager.xpInstance.updatePlayerJumpForceClientMessage.SendServer(networkData);
         }
