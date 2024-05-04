@@ -15,6 +15,8 @@ namespace LethalProgression.Patches
         [HarmonyPatch(typeof(StartOfRound), "FirePlayersAfterDeadlineClientRpc")]
         private static void ResetXPValues(StartOfRound __instance)
         {
+            if (!bool.Parse(SkillConfig.hostConfig["Keep progress"]))
+            {
             var xpInstance = LP_NetworkManager.xpInstance;
             int saveFileNum = GameNetworkManager.Instance.saveFileNum + 1;
             SaveManager.DeleteSave(saveFileNum);
@@ -32,6 +34,7 @@ namespace LethalProgression.Patches
             xpInstance.teamLevel.Value = 0;
 
             xpInstance.teamLootLevel.Value = 0;
+            }
         }
 
         [HarmonyPostfix]

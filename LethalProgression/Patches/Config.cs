@@ -50,6 +50,12 @@ namespace LethalProgression.Config
                 false,
                 "Disallows unspecing altogether."
             );
+            LethalPlugin.Instance.BindConfig<bool>(
+                "General",
+                "Keep progress",
+                false,
+                "Keep your progress on reset"
+            );
 
             // Skill Configs
             LethalPlugin.Instance.BindConfig<bool>(
