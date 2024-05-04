@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using LethalProgression.Skills;
 using LethalProgression.GUI;
+using LethalProgression.Config;
 using GameNetcodeStuff;
 using LethalProgression.Saving;
 using Steamworks;
