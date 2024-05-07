@@ -14,13 +14,12 @@ using LethalProgression.GUI.HandSlot;
 namespace LethalProgression;
 
 [BepInDependency("LethalNetworkAPI")]
-[BepInPlugin("Stoneman.LethalProgression", "Lethal Progression", "1.7.1")]
+[BepInPlugin(modGUID, modName, modVersion)]
 internal class LethalPlugin : BaseUnityPlugin
 {
-    private const string modGUID = "Stoneman.LethalProgression";
+    private const string modGUID = "TisRyno.LethalProgression";
     private const string modName = "Lethal Progression";
-    private const string modVersion = "1.7.1";
-    private const string modAuthor = "Stoneman";
+    private const string modVersion = "1.7.4";
     public static AssetBundle skillBundle;
 
     internal static ManualLogSource Log;
