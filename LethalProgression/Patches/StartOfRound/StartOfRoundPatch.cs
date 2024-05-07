@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 using HarmonyLib;
 using LethalProgression.Saving;
 using LethalProgression.Skills;
@@ -26,6 +28,11 @@ internal class StartOfRoundPatch
     [HarmonyPatch(typeof(StartOfRound), "FirePlayersAfterDeadlineClientRpc")]
     private static void ResetXPValues(StartOfRound __instance)
     {
+        IDictionary<string, string> hostConfig = LethalPlugin.ModConfig.hostConfig;
+
+        if (bool.Parse(hostConfig["Keep progress"]))
+            return;
+        
         var xpInstance = LP_NetworkManager.xpInstance;
         int saveFileNum = GameNetworkManager.Instance.saveFileNum + 1;
         SaveManager.DeleteSave(saveFileNum);

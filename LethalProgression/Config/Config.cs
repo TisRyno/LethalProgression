@@ -65,6 +65,12 @@ internal class ModConfig
             false,
             "Disallows unspecing altogether."
         );
+        config.Bind(
+            "General",
+            "Keep progress",
+            false,
+            "Keep your progress after being fired"
+        );
     }
 
     private void InitHealthSettings(ConfigFile config)
