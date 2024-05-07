@@ -1,16 +1,13 @@
-using LethalProgression.Saving;
+namespace LethalProgression.Network;
 
-namespace LethalProgression.Network
+internal struct PlayerHandSlotData
 {
-    internal class PlayerHandSlotData
-    {
-        public ulong clientId { get; set; }
-        public int additionalSlots { get; set; }
+    public ulong clientId;
+    public int additionalSlots;
 
-        public PlayerHandSlotData(ulong clientId, int additionalSlots)
-        {
-            this.clientId = clientId;
-            this.additionalSlots = additionalSlots;
-        }
+    public PlayerHandSlotData(ulong clientId, int additionalSlots)
+    {
+        this.clientId = clientId;
+        this.additionalSlots = additionalSlots;
     }
 }
