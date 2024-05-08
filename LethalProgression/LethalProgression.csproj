@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <AssemblyName>TisRyno.LethalProgression</AssemblyName>
+        <AssemblyName>LethalProgression</AssemblyName>
         <Description>Leveling and skillpoints through a managed GUI! Patched and bugfixed until official copy updated.</Description>
         <!-- The plugin will be built in the bin directory -->
         <OutputPath>bin</OutputPath>
@@ -95,7 +95,7 @@
         <DllNames Include="UnityEngine.AssetBundleModule" />
         <DllNames Include="UnityEngine.AudioModule" />
         <DllNames Include="UnityEngine.CoreModule" />
-
+        
         <Reference Include="@(DllNames)" HintPath="$(AssemblyGameDir)%(Identity).dll"/>
     </ItemGroup>
 
