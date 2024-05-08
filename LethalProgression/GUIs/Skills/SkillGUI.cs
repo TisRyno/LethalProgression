@@ -1,4 +1,5 @@
 ﻿using LethalProgression.Skills;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -274,8 +275,8 @@ internal class SkillsGUI
                 return;
 
             // If we have less levels than delta, set to remaining levels
-            if (currentLevel < delta)
-                delta = currentLevel;
+            if (currentLevel < Math.Abs(delta))
+                delta = -currentLevel;
         }
 
         // Remove skill points first to stop desync
