@@ -100,7 +100,7 @@ internal class LC_XP : NetworkBehaviour
 
         // Network Variable handlers
         teamLevel.OnValueChanged += OnTeamLevelChange;
-        teamXP.OnValueChanged += OnTeamXPChange;
+        // teamXP.OnValueChanged += OnTeamXPChange;
 
         // Network Events handlers
         playerConnectServerEvent.OnReceived += PlayerConnect_C2SEvent;
@@ -127,9 +127,9 @@ internal class LC_XP : NetworkBehaviour
 
     public override void OnDestroy()
     {
-            // Network Variable handlers
+        // Network Variable handlers
         teamLevel.OnValueChanged -= OnTeamLevelChange;
-        teamXP.OnValueChanged -= OnTeamXPChange;
+        // teamXP.OnValueChanged -= OnTeamXPChange;
         teamLootLevel.OnValueChanged -= LethalPlugin.SkillsGUI.TeamLootHudUpdate;
 
         // Network Events handlers
@@ -325,12 +325,6 @@ internal class LC_XP : NetworkBehaviour
 
     public void UpdateTeamXP_C2SMessage(int xpToAdd, ulong clientId)
     {
-        float mult = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].GetMultiplier();
-        float value = LP_NetworkManager.xpInstance.teamLootLevel.Value * mult;
-        float valueMultiplier = 1 + (value / 100f);
-
-        xpToAdd = (int) Math.Floor(xpToAdd / valueMultiplier);
-
         // Update XP values
         teamXP.Value += xpToAdd;
         teamTotalValue.Value += xpToAdd;
