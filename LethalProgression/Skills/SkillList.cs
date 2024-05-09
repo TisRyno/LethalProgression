@@ -61,7 +61,7 @@ internal class SkillList
                 "Stamina",
                 1,
                 int.Parse(hostConfig["Stamina Max Level"]),
-                float.Parse(hostConfig["Stamina Multiplier"], CultureInfo.InvariantCulture),
+                float.Parse(hostConfig["Stamina Multiplier"], CultureInfo.InvariantCulture)
             );
         }
 
