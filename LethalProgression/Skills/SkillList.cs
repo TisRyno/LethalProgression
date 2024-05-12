@@ -143,8 +143,7 @@ internal class SkillList
                 "Jump Height",
                 1,
                 int.Parse(hostConfig["Jump Height Max Level"]),
-                float.Parse(hostConfig["Jump Height Multiplier"], CultureInfo.InvariantCulture),
-                JumpHeight.JumpHeightUpdate
+                float.Parse(hostConfig["Jump Height Multiplier"], CultureInfo.InvariantCulture)
             );
         }
 
