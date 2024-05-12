@@ -20,7 +20,6 @@ internal class GameNetworkManagerPatch
             LP_NetworkManager.xpInstance.updateTeamLootLevelClientMessage.SendServer(-localLootLevel);
         }
 
-        SprintSpeed.sprintSpeed = 2.25f;
         HandSlots.currentSlotCount = 4;
 
         LethalPlugin.SkillsGUI.CleanupGUI();

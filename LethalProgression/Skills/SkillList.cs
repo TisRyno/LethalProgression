@@ -156,8 +156,7 @@ internal class SkillList
                 "Sprint Speed",
                 1,
                 int.Parse(hostConfig["Sprint Speed Max Level"]),
-                float.Parse(hostConfig["Sprint Speed Multiplier"], CultureInfo.InvariantCulture),
-                SprintSpeed.SprintSpeedUpdate
+                float.Parse(hostConfig["Sprint Speed Multiplier"], CultureInfo.InvariantCulture)
             );
         }
     }
