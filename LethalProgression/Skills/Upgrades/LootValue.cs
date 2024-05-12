@@ -17,8 +17,6 @@ internal class LootValue
         float value = LP_NetworkManager.xpInstance.teamLootLevel.Value * mult;
         float valueMultiplier = 1 + (value / 100f);
 
-        LethalPlugin.Log.LogDebug($"Add {valueMultiplier} to ScrapValueMultiplier ({defaultScrapValueMultiplier}), result: {defaultScrapValueMultiplier * valueMultiplier}");
-
         return defaultScrapValueMultiplier * valueMultiplier;
     }
 
