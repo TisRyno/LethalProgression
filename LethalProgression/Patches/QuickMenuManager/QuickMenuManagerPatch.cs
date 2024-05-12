@@ -34,32 +34,22 @@ internal class QuickMenuManagerPatch
         {
             // Check if you are in the ship right now
             if (GameNetworkManager.Instance.localPlayerController.isInHangarShipRoom)
-            {
                 LethalPlugin.SkillsGUI.SetUnspec(true);
-            }
             else
-            {
                 LethalPlugin.SkillsGUI.SetUnspec(false);
-            }
         }
 
         if (bool.Parse(LethalPlugin.ModConfig.hostConfig["Unspec in Orbit Only"]))
         {
             // Check if you are in orbit right now
             if (StartOfRound.Instance.inShipPhase)
-            {
                 LethalPlugin.SkillsGUI.SetUnspec(true);
-            }
             else
-            {
                 LethalPlugin.SkillsGUI.SetUnspec(false);
-            }
         }
 
         if (bool.Parse(LethalPlugin.ModConfig.hostConfig["Disable Unspec"]))
-        {
             LethalPlugin.SkillsGUI.SetUnspec(false);
-        }
 
         LethalPlugin.SkillsGUI.OpenSkillMenu();
     }
