@@ -11,12 +11,6 @@ internal class HPRegen
     [HarmonyPatch(typeof(PlayerControllerB), "LateUpdate")]
     private static void HPRegenUpdate(PlayerControllerB __instance)
     {
-        if (!__instance.IsOwner || (__instance.IsServer && !__instance.isHostPlayerObject))
-            return;
-
-        if (!__instance.isPlayerControlled || __instance.health >= 100 || __instance.isPlayerDead)
-            return;
-
         if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.HPRegen))
             return;
 
@@ -32,9 +26,13 @@ internal class HPRegen
             __instance.health++;
 
             if (__instance.health >= 20)
-            {
                 __instance.MakeCriticallyInjured(false);
-            }
+            
+            if (!__instance.IsOwner || (__instance.IsServer && !__instance.isHostPlayerObject))
+                return;
+
+            if (!__instance.isPlayerControlled || __instance.health >= 100 || __instance.isPlayerDead)
+                return;
 
             HUDManager.Instance.UpdateHealthUI(__instance.health, false);
 
