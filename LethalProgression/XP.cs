@@ -84,10 +84,6 @@ internal class LC_XP : NetworkBehaviour
     // Request Client to update player hand slots
     public LethalServerMessage<PlayerHandSlotData> updatePlayerHandSlotsServerMessage = new LethalServerMessage<PlayerHandSlotData>(identifier: "updatePlayerHandSlotsMessage");
     public LethalClientMessage<PlayerHandSlotData> updatePlayerHandSlotsClientMessage = new LethalClientMessage<PlayerHandSlotData>(identifier: "updatePlayerHandSlotsMessage");
-    
-    // Request Server and Clients to update player jump height
-    public LethalServerMessage<PlayerJumpHeightData> updatePlayerJumpForceServerMessage = new LethalServerMessage<PlayerJumpHeightData>(identifier: "updatePlayerJumpForceMessage");
-    public LethalClientMessage<PlayerJumpHeightData> updatePlayerJumpForceClientMessage = new LethalClientMessage<PlayerJumpHeightData>(identifier: "updatePlayerJumpForceMessage");
 
     public int skillPoints;
     public SkillList skillList;
@@ -112,7 +108,6 @@ internal class LC_XP : NetworkBehaviour
         receiveProfileDataClientMessage.OnReceived += LoadProfileData_S2CMessage;
         updatePlayerSkillpointsClientMessage.OnReceived += UpdateSkillPoints_S2CMessage;
         updatePlayerHandSlotsClientMessage.OnReceived += UpdatePlayerHandSlots_S2CMessage;
-        updatePlayerJumpForceClientMessage.OnReceived += UpdatePlayerJumpHeight_S2CMessage;
 
         // Network Message handlers Client2Server
         requestProfileDataServerMessage.OnReceived += RequestSavedData_C2SMessage;
@@ -120,7 +115,6 @@ internal class LC_XP : NetworkBehaviour
         updateTeamLootLevelServerMessage.OnReceived += UpdateTeamLootLevel_C2SMessage;
         updateTeamXPServerMessage.OnReceived += UpdateTeamXP_C2SMessage;
         updateSPHandSlotsServerMessage.OnReceived += UpdateSPHandSlots_C2SMessage;
-        updatePlayerJumpForceServerMessage.OnReceived += UpdatePlayerJumpHeight_C2SMessage;
 
         playerConnectClientEvent.InvokeServer();
     }
@@ -525,25 +519,5 @@ internal class LC_XP : NetworkBehaviour
 
         SaveManager.Save(profileData.steamId, profileData.saveData);
         SaveManager.SaveShared(teamXP.Value, teamLevel.Value, teamTotalValue.Value);
-    }
-
-    public void UpdatePlayerJumpHeight_C2SMessage(PlayerJumpHeightData playerData, ulong clientId)
-    {
-        LethalPlugin.Log.LogInfo($"Received request for {clientId} [{playerData.clientId}] to set jump skill to {playerData.jumpSkillValue}");
-        
-        updatePlayerJumpForceServerMessage.SendAllClients(playerData);
-    }
-
-    public void UpdatePlayerJumpHeight_S2CMessage(PlayerJumpHeightData playerData)
-    {
-        PlayerControllerB playerController = playerData.clientId.GetPlayerController();
-        Skill skill = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.JumpHeight];
-
-        // 10 is 100%. So if 1 level adds 1% more, then it is 10 * 1.01.
-        float addedJump = playerData.jumpSkillValue * skill.GetMultiplier() / 100f * 13f;
-
-        playerController.jumpForce = 13f + addedJump;
-
-        LethalPlugin.Log.LogInfo($"Updating client {playerData.clientId} jump height. Adding {addedJump} resulting in {playerController.jumpForce} jump force");
     }
 }
