@@ -15,7 +15,6 @@ internal class ModConfig
         InitBatterySettings(config);
         InitHandSlotsSettings(config);
         InitLootValueSettings(config);
-        InitOxygenSettings(config);
         InitJumpHeightSettings(config);
         InitSprintSpeedSettings(config);
         InitStrengthSettings(config);
@@ -190,30 +189,6 @@ internal class ModConfig
             "Loot Value Multiplier",
             0.1f,
             "How much does the loot value skill increase per level?"
-        );
-    }
-
-    private void InitOxygenSettings(ConfigFile config)
-    {
-        config.Bind(
-            "Oxygen",
-            "Oxygen Enabled",
-            true,
-            "Enable the Oxygen skill?"
-        );
-
-        config.Bind(
-            "Oxygen",
-            "Oxygen Max Level",
-            99999,
-            "Maximum level for Oxygen."
-        );
-
-        config.Bind(
-            "Oxygen",
-            "Oxygen Multiplier",
-            1f,
-            "How much does the Oxygen skill increase per level?"
         );
     }
 

@@ -7,7 +7,6 @@ public enum UpgradeType
     Battery,
     HandSlot,
     Value,
-    Oxygen,
     JumpHeight,
     SprintSpeed,
     Strength,

@@ -17,9 +17,9 @@ This mod will be accepting PRs with fixes, as well as bug reports. I do not inte
 - Battery Life
 - Hand Slots
 - Loot Value
-- Oxygen
 - Strength
 - Jump Height
+- Sprint speed
 
 #### Level up yourself and the crew:
 - Assign points into stats to improve your performance.

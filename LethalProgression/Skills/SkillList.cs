@@ -106,20 +106,7 @@ internal class SkillList
                 true
             );
         }
-
-        if (bool.Parse(hostConfig["Oxygen Enabled"]))
-        {
-            CreateSkill(UpgradeType.Oxygen,
-                "Oxygen",
-                "The company installs you with oxygen tanks. You gain extra time in the water. (Start drowning when the bar is empty.)",
-                "OXY",
-                "Extra Oxygen",
-                1,
-                int.Parse(hostConfig["Oxygen Max Level"]),
-                float.Parse(hostConfig["Oxygen Multiplier"], CultureInfo.InvariantCulture)
-            );
-        }
-
+        
         if (bool.Parse(hostConfig["Strength Enabled"]))
         {
             CreateSkill(UpgradeType.Strength,
