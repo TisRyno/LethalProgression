@@ -10,20 +10,6 @@ namespace LethalProgression.Patches;
 [HarmonyPatch]
 internal class StartOfRoundPatch
 {
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(StartOfRound), "ResetMiscValues")]
-    private static void ResetMiscValues_PrePatch()
-    {
-        JumpHeight.JumpHeightUpdate(0);
-    }
-    
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(StartOfRound), "OnShipLandedMiscEvents")]
-    private static void OnShipLandedMiscEvents_PrePatch()
-    {
-        JumpHeight.JumpHeightUpdate(0);
-    }
-
     [HarmonyPostfix]
     [HarmonyPatch(typeof(StartOfRound), "FirePlayersAfterDeadlineClientRpc")]
     private static void ResetXPValues(StartOfRound __instance)
