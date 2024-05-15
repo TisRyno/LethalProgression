@@ -7,7 +7,7 @@ namespace LethalProgression.Skills;
 
 internal class SkillList
 {
-    public Dictionary<UpgradeType, Skill> skills = new Dictionary<UpgradeType, Skill>();
+    public Dictionary<UpgradeType, Skill> skills = new();
 
     public void CreateSkill(UpgradeType upgrade, string name, string description, string shortname, string attribute, int cost, int maxLevel, float multiplier, Action<int> callback = null, bool teamShared = false)
     {
@@ -15,10 +15,7 @@ internal class SkillList
         skills.Add(upgrade, newSkill);
     }
 
-    public bool IsSkillValid(UpgradeType upgrade)
-    {
-        return skills.ContainsKey(upgrade);
-    }
+    public bool IsSkillValid(UpgradeType upgrade) => skills.ContainsKey(upgrade) && skills[upgrade].GetLevel() > 0;
 
     public Skill GetSkill(UpgradeType upgrade)
     {
@@ -30,10 +27,7 @@ internal class SkillList
         return skills[upgrade];
     }
 
-    public Dictionary<UpgradeType, Skill> GetSkills()
-    {
-        return skills;
-    }
+    public Dictionary<UpgradeType, Skill> GetSkills() => skills;
 
     public void InitializeSkills()
     {
@@ -134,7 +128,7 @@ internal class SkillList
             );
         }
 
-        if (!LethalPlugin.MikesTweaks && bool.Parse(hostConfig["Sprint Speed Enabled"]))
+        if (bool.Parse(hostConfig["Sprint Speed Enabled"]))
         {
             CreateSkill(UpgradeType.SprintSpeed,
                 "Sprint Speed",
