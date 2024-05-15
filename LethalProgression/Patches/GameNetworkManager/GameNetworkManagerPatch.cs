@@ -2,7 +2,6 @@
 using LethalProgression.Saving;
 using LethalProgression.Skills;
 using LethalProgression.Skills.Upgrades;
-using Unity.Netcode;
 
 namespace LethalProgression.Patches;
 

@@ -34,7 +34,7 @@ internal class Strength
             if (obj == null) continue;
 
             float oldItemWeight = obj.itemProperties.weight - 1f;
-            oldItemWeight *= (1 - multiplier);
+            oldItemWeight *= 1 - multiplier;
 
             newCarryWeight += oldItemWeight;
             LethalPlugin.Log.LogDebug($"Item weight was {obj.itemProperties.weight - 1f} and is now {oldItemWeight}");

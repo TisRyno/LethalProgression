@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 namespace LethalProgression.GUI.Skills;
 
-
 internal class SkillsGUI
 {
     private GameObject mainPanel;

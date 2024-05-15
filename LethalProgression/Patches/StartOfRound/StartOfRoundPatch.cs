@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using HarmonyLib;
 using LethalProgression.Saving;
 using LethalProgression.Skills;
-using LethalProgression.Skills.Upgrades;
 
 namespace LethalProgression.Patches;
     

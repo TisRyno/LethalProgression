@@ -2,7 +2,6 @@
 
 namespace LethalProgression.GUI.HandSlot;
 
-
 internal class SlotTemplate
 {
     private GameObject templateSlot;
