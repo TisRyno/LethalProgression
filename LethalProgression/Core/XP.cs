@@ -173,7 +173,7 @@ internal class LC_XP : NetworkBehaviour
     {
         LethalPlugin.Log.LogInfo($"Received PlayerConnect message from {clientId}");
 
-        IDictionary<string, string> configDict = LethalPlugin.Instance.GetAllConfigEntries();
+        IDictionary<string, object> configDict = LethalPlugin.Instance.GetAllConfigEntries();
         string serializedConfig = JsonConvert.SerializeObject(configDict);
 
         LethalPlugin.Log.LogInfo($"Sending config -> {serializedConfig}");
@@ -340,7 +340,7 @@ internal class LC_XP : NetworkBehaviour
             // Update level value
             teamXP.Value = newXP;
             teamLevel.Value += levelUps;
-
+            
             updatePlayerSkillpointsServerMessage.SendAllClients(levelUps);
         }
     }
