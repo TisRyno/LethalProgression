@@ -5,7 +5,6 @@ using HarmonyLib;
 
 namespace LethalProgression.Skills.Upgrades;
 
-[HarmonyPatch]
 internal class BatteryLife
 {
     public static float GetUseItemBatteryUsage(float defaultBatteryUsage)
@@ -19,11 +18,8 @@ internal class BatteryLife
         return defaultBatteryUsage * usageMultiplier;
     }
 
-    [HarmonyTranspiler]
-    [HarmonyPatch(typeof(GrabbableObject), "UseItemBatteries")]
-    static IEnumerable<CodeInstruction> UseItemBatteriesTranspiler(IEnumerable<CodeInstruction> instructions)
+    public static List<CodeInstruction> UseItemBatteriesOpCode(List<CodeInstruction> codes)
     {
-        List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
         FieldInfo batteryUsage = typeof(Item).GetField(nameof(Item.batteryUsage));
 
         for (int index = 0; index < codes.Count; index++)
@@ -43,12 +39,9 @@ internal class BatteryLife
 
         return defaultBatteryUsage * batteryMultiplier;
     }
-    
-    [HarmonyTranspiler]
-    [HarmonyPatch(typeof(GrabbableObject), "Update")]
-    static IEnumerable<CodeInstruction> UpdateTranspiler(IEnumerable<CodeInstruction> instructions)
+
+    public static List<CodeInstruction> BatteryDegradeUpdateOpCode(List<CodeInstruction> codes)
     {
-        List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
         FieldInfo batteryUsage = typeof(Item).GetField(nameof(Item.batteryUsage));
 
         for (int index = 0; index < codes.Count; index++)

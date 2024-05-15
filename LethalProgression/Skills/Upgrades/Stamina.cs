@@ -6,7 +6,6 @@ using HarmonyLib;
 
 namespace LethalProgression.Skills.Upgrades;
 
-[HarmonyPatch]
 internal class Stamina
 {
     public static float GetJumpStaminaUsage(float defaultJumpStaminaUsage)
@@ -20,12 +19,8 @@ internal class Stamina
         return defaultJumpStaminaUsage * usageMultiplier;
     }
 
-    [HarmonyTranspiler]
-    [HarmonyPatch(typeof(PlayerControllerB), "Jump_performed")]
-    private static IEnumerable<CodeInstruction> Jump_performedTransplier(IEnumerable<CodeInstruction> instructions) 
+    public static List<CodeInstruction> PlayerJumpStaminaOpCode(List<CodeInstruction> codes)
     {
-        List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-
         for (int index = 0; index < codes.Count; index++)
             if (codes[index].opcode == OpCodes.Ldc_R4 && codes[index].operand.Equals(0.08f))
                 codes.Insert(index + 1, new CodeInstruction(OpCodes.Call, typeof(Stamina).GetMethod("GetJumpStaminaUsage")));
@@ -42,12 +37,9 @@ internal class Stamina
 
         return defaultStaminaTime * staminaMultiplier;
     }
-    
-    [HarmonyTranspiler]
-    [HarmonyPatch(typeof(PlayerControllerB), "LateUpdate")]
-    private static IEnumerable<CodeInstruction> LateUpdateTransplier(IEnumerable<CodeInstruction> instructions) 
+
+    public static List<CodeInstruction> PlayerSprintTimeOpCode(List<CodeInstruction> codes) 
     {
-        List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
         FieldInfo sprintTime = typeof(PlayerControllerB).GetField(nameof(PlayerControllerB.sprintTime));
 
         for (int index = 0; index < codes.Count; index++)

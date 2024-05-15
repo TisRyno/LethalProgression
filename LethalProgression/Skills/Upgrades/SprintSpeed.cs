@@ -1,12 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Reflection.Emit;
-using GameNetcodeStuff;
 using HarmonyLib;
 
 namespace LethalProgression.Skills.Upgrades;
 
-[HarmonyPatch]
 public static class SprintSpeed
 {   
     public static float GetSprintSpeed(float defaultSprintSpeed)
@@ -19,16 +16,12 @@ public static class SprintSpeed
         return defaultSprintSpeed * speedMultiplier;
     }
 
-    [HarmonyTranspiler]
-    [HarmonyPatch(typeof(PlayerControllerB), "Update")]
-    private static IEnumerable<CodeInstruction> Update_Transpiler(IEnumerable<CodeInstruction> instructions)
+    public static List<CodeInstruction> PlayerSprintSpeedOpCode(List<CodeInstruction> codes)
     {
-        var codes = new List<CodeInstruction>(instructions);
+         for (int index = 0; index < codes.Count; index++)
+            if (codes[index].opcode == OpCodes.Ldc_R4 && codes[index].operand.Equals(2.25f))
+                codes.Insert(index + 1, new CodeInstruction(OpCodes.Call, typeof(SprintSpeed).GetMethod("GetSprintSpeed")));
         
-        for (int i = 0; i < codes.Count; i++)
-            if (codes[i].opcode == OpCodes.Ldc_R4 && codes[i].operand.Equals(2.25f))
-                codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, typeof(SprintSpeed).GetMethod("GetSprintSpeed")));
-
-        return codes.AsEnumerable();
+        return codes;
     }
 }
