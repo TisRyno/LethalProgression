@@ -1,26 +1,17 @@
 ﻿using LethalProgression.Skills;
 using System.Collections.Generic;
 
-namespace LethalProgression.Saving
+namespace LethalProgression.Saving;
+
+internal struct SaveData
 {
-    internal class SaveData
-    {
-        public ulong steamId;
-        public int skillPoints { get; set; }
-        public Dictionary<UpgradeType, int> skillAllocation = new Dictionary<UpgradeType, int>();
-    }
+    public ulong steamId;
+    public int skillPoints;
+    public Dictionary<UpgradeType, int> skillAllocation = new Dictionary<UpgradeType, int>();
 
-    internal class SaveSharedData
+    public SaveData(ulong steamId, int skillPoints)
     {
-        public int xp { get; set; }
-        public int level { get; set; }
-        public int quota { get; set; }
-
-        public SaveSharedData(int xp, int level, int quota)
-        {
-            this.xp = xp;
-            this.level = level;
-            this.quota = quota;
-        }
+        this.steamId = steamId;
+        this.skillPoints = skillPoints;
     }
 }

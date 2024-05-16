@@ -3,41 +3,40 @@ using Unity.Netcode;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace LethalProgression
+namespace LethalProgression;
+
+[HarmonyPatch]
+internal class LP_NetworkManager
 {
-    [HarmonyPatch]
-    internal class LP_NetworkManager
+    public static LC_XP xpInstance;
+    public static GameObject xpNetworkObject;
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(GameNetworkManager), "Start")]
+    public static void Init()
     {
-        public static LC_XP xpInstance;
-        public static GameObject xpNetworkObject;
+        if (xpNetworkObject != null)
+            return;
 
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(GameNetworkManager), "Start")]
-        public static void Init()
-        {
-            if (xpNetworkObject != null)
-                return;
+        xpNetworkObject = (GameObject)LethalPlugin.skillBundle.LoadAsset("LP_XPHandler");
+        xpNetworkObject.AddComponent<LC_XP>();
 
-            xpNetworkObject = (GameObject)LethalPlugin.skillBundle.LoadAsset("LP_XPHandler");
-            xpNetworkObject.AddComponent<LC_XP>();
+        NetworkManager.Singleton.AddNetworkPrefab(xpNetworkObject);
+    }
 
-            NetworkManager.Singleton.AddNetworkPrefab(xpNetworkObject);
-        }
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(StartOfRound), "Awake")]
+    static void SpawnNetworkHandler()
+    {
+        if (!NetworkManager.Singleton.IsHost && !NetworkManager.Singleton.IsServer)
+            return;
 
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(StartOfRound), "Awake")]
-        static void SpawnNetworkHandler()
-        {
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-            {
-                GameObject networkHandlerHost = Object.Instantiate(xpNetworkObject, Vector3.zero, Quaternion.identity);
+        GameObject networkHandlerHost = Object.Instantiate(xpNetworkObject, Vector3.zero, Quaternion.identity);
 
-                networkHandlerHost.GetComponent<NetworkObject>().Spawn();
+        networkHandlerHost.GetComponent<NetworkObject>().Spawn();
 
-                xpInstance = networkHandlerHost.GetComponent<LC_XP>();
+        xpInstance = networkHandlerHost.GetComponent<LC_XP>();
 
-                LethalPlugin.Log.LogInfo("XPHandler Initialized.");
-            }
-        }
+        LethalPlugin.Log.LogInfo("XPHandler Initialized.");
     }
 }

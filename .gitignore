@@ -6,3 +6,5 @@ Releases
 **/obj
 **/GameDirectory.targets
 ShipLoot.sln.DotSettings.user
+host-log.md
+player-log.md
