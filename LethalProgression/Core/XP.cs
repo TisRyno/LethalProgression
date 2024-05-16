@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using System.Linq;
 using LethalNetworkAPI;
 using System;
+using LethalProgression.LessShitConfig;
+using LethalProgression.Config;
 
 namespace LethalProgression;
 
@@ -86,7 +88,7 @@ internal class LC_XP : NetworkBehaviour
     public LethalClientMessage<PlayerHandSlotData> updatePlayerHandSlotsClientMessage = new LethalClientMessage<PlayerHandSlotData>(identifier: "updatePlayerHandSlotsMessage");
 
     public int skillPoints;
-    public SkillList skillList;
+    public SkillList skillList = new();
     public bool Initialized = false;
     public bool loadedSave = false;
 
@@ -173,12 +175,10 @@ internal class LC_XP : NetworkBehaviour
     {
         LethalPlugin.Log.LogInfo($"Received PlayerConnect message from {clientId}");
 
-        IDictionary<string, object> configDict = LethalPlugin.Instance.GetAllConfigEntries();
-        string serializedConfig = JsonConvert.SerializeObject(configDict);
-
-        LethalPlugin.Log.LogInfo($"Sending config -> {serializedConfig}");
-
-        sendConfigServerMessage.SendAllClients(serializedConfig);
+        LessShitConfigSystem.ClearHostConfigs(); // Clear host config overrides. We are the host.
+        var hostConfig = LessShitConfigSystem.SerializeLocalConfigs();
+        LethalPlugin.Log.LogInfo($"Sending config -> {hostConfig}");
+        sendConfigServerMessage.SendClient(hostConfig, clientId); // Sync the config to connecting player
     }
 
     public void LoadSharedData()
@@ -258,25 +258,22 @@ internal class LC_XP : NetworkBehaviour
         int playerCount = StartOfRound.Instance.connectedPlayersAmount;
         int quota = TimeOfDay.Instance.timesFulfilledQuota;
 
-        int initialXPCost = int.Parse(LethalPlugin.ModConfig.hostConfig["XP Minimum"]);
-        int maxXPCost = int.Parse(LethalPlugin.ModConfig.hostConfig["XP Maximum"]);
+        IGeneralConfig generalConfig = LessShitConfigSystem.GetActive<IGeneralConfig>();
 
-        int personScale = int.Parse(LethalPlugin.ModConfig.hostConfig["Person Multiplier"]);
-        int personValue = playerCount * personScale;
-        int req = initialXPCost + personValue;
+        int personValue = playerCount * generalConfig.personMultiplier;
+        int req = generalConfig.minXP + personValue;
 
         // Quota multiplier
-        int quotaMult = int.Parse(LethalPlugin.ModConfig.hostConfig["Quota Multiplier"]);
-        int quotaVal = quota * quotaMult;
+        int quotaVal = quota * generalConfig.quotaMultiplier;
 
         req += (int)(req * (quotaVal / 100f));
 
-        if (req > maxXPCost)
+        if (req > generalConfig.maxXP)
         {
-            req = maxXPCost;
+            req = generalConfig.maxXP;
         }
 
-        LethalPlugin.Log.LogInfo($"{playerCount} players, {quota} quotas, {initialXPCost} initial cost, {personValue} person value, {quotaVal} quota value, {req} total cost.");
+        LethalPlugin.Log.LogInfo($"{playerCount} players, {quota} quotas, {generalConfig.minXP} initial cost, {personValue} person value, {quotaVal} quota value, {req} total cost.");
         
         return req;
     }
@@ -458,20 +455,13 @@ internal class LC_XP : NetworkBehaviour
 
     public void SendHostConfig_S2CMessage(string serializedConfig)
     {
-        IDictionary<string, string> configs = JsonConvert.DeserializeObject<IDictionary<string, string>>(serializedConfig);
-        // Apply configs.
-        foreach (KeyValuePair<string, string> entry in configs)
-        {
-            LethalPlugin.ModConfig.hostConfig[entry.Key] = entry.Value;
-            LethalPlugin.Log.LogInfo($"Loaded host config: {entry.Key} = {entry.Value}");
-        }
+        LessShitConfigSystem.ApplyHostConfigs(serializedConfig);
 
         if (!Initialized)
         {
             Initialized = true;
             LP_NetworkManager.xpInstance = this;
             
-            skillList = new SkillList();
             skillList.InitializeSkills();
 
             if (GameNetworkManager.Instance.isHostingGame)

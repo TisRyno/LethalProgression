@@ -1,4 +1,6 @@
 ﻿using HarmonyLib;
+using LethalProgression.Config;
+using LethalProgression.LessShitConfig;
 
 namespace LethalProgression.Patches;
 
@@ -30,7 +32,9 @@ internal class QuickMenuManagerPatch
             return;
         }
 
-        if (bool.Parse(LethalPlugin.ModConfig.hostConfig["Unspec in Ship Only"]) && !bool.Parse(LethalPlugin.ModConfig.hostConfig["Disable Unspec"]))
+        IGeneralConfig generalConfig = LessShitConfigSystem.GetActive<IGeneralConfig>();
+
+        if (generalConfig.enableUnspecInShip && !generalConfig.disableUnspec)
         {
             // Check if you are in the ship right now
             if (GameNetworkManager.Instance.localPlayerController.isInHangarShipRoom)
@@ -39,7 +43,7 @@ internal class QuickMenuManagerPatch
                 LethalPlugin.SkillsGUI.SetUnspec(false);
         }
 
-        if (bool.Parse(LethalPlugin.ModConfig.hostConfig["Unspec in Orbit Only"]))
+        if (generalConfig.enableUnspecInOrbit)
         {
             // Check if you are in orbit right now
             if (StartOfRound.Instance.inShipPhase)
@@ -48,7 +52,7 @@ internal class QuickMenuManagerPatch
                 LethalPlugin.SkillsGUI.SetUnspec(false);
         }
 
-        if (bool.Parse(LethalPlugin.ModConfig.hostConfig["Disable Unspec"]))
+        if (generalConfig.disableUnspec)
             LethalPlugin.SkillsGUI.SetUnspec(false);
 
         LethalPlugin.SkillsGUI.OpenSkillMenu();

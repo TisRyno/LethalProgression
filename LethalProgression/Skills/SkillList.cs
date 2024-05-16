@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using LethalProgression.Config;
+using LethalProgression.LessShitConfig;
 using LethalProgression.Skills.Upgrades;
 
 namespace LethalProgression.Skills;
@@ -31,9 +33,16 @@ internal class SkillList
 
     public void InitializeSkills()
     {
-        IDictionary<string, string> hostConfig = LethalPlugin.ModConfig.hostConfig;
+        IHealthRegenConfig hpConfig = LessShitConfigSystem.GetActive<IHealthRegenConfig>();
+        IStaminaConfig staminaConfig = LessShitConfigSystem.GetActive<IStaminaConfig>();
+        IBatteryLifeConfig batteryConfig = LessShitConfigSystem.GetActive<IBatteryLifeConfig>();
+        IHandSlotsConfig handSlotConfig = LessShitConfigSystem.GetActive<IHandSlotsConfig>();
+        ILootValueConfig lootValueConfig = LessShitConfigSystem.GetActive<ILootValueConfig>();
+        IStrengthConfig strengthConfig = LessShitConfigSystem.GetActive<IStrengthConfig>();
+        IJumpHeightConfig jumpHeightConfig = LessShitConfigSystem.GetActive<IJumpHeightConfig>();
+        ISprintSpeedConfig sprintSpeedConfig = LessShitConfigSystem.GetActive<ISprintSpeedConfig>();
 
-        if (bool.Parse(hostConfig["Health Regen Enabled"]))
+        if (hpConfig.isEnabled)
         {
             CreateSkill(UpgradeType.HPRegen,
                 "Health Regen",
@@ -41,12 +50,12 @@ internal class SkillList
                 "HPR",
                 "Health Regeneration",
                 1,
-                int.Parse(hostConfig["Health Regen Max Level"]),
-                float.Parse(hostConfig["Health Regen Multiplier"], CultureInfo.InvariantCulture)
+                hpConfig.maxLevel,
+                hpConfig.multiplier
             );
         }
 
-        if (bool.Parse(hostConfig["Stamina Enabled"]))
+        if (staminaConfig.isEnabled)
         {
             CreateSkill(UpgradeType.Stamina,
                 "Stamina",
@@ -54,12 +63,12 @@ internal class SkillList
                 "STM",
                 "Stamina",
                 1,
-                int.Parse(hostConfig["Stamina Max Level"]),
-                float.Parse(hostConfig["Stamina Multiplier"], CultureInfo.InvariantCulture)
+                staminaConfig.maxLevel,
+                staminaConfig.multiplier
             );
         }
 
-        if (bool.Parse(hostConfig["Battery Life Enabled"]))
+        if (batteryConfig.isEnabled)
         {
             CreateSkill(UpgradeType.Battery,
                 "Battery Life",
@@ -67,12 +76,12 @@ internal class SkillList
                 "BAT",
                 "Battery Life",
                 1,
-                int.Parse(hostConfig["Battery Life Max Level"]),
-                float.Parse(hostConfig["Battery Life Multiplier"], CultureInfo.InvariantCulture)
+                batteryConfig.maxLevel,
+                batteryConfig.multiplier
             );
         }
 
-        if (bool.Parse(hostConfig["Hand Slots Enabled"]) && !LethalPlugin.ReservedSlots)
+        if (handSlotConfig.isEnabled && !LethalPlugin.ReservedSlots)
         {
                 CreateSkill(UpgradeType.HandSlot,
                 "Hand Slot",
@@ -80,13 +89,13 @@ internal class SkillList
                 "HND",
                 "Hand Slots",
                 1,
-                int.Parse(hostConfig["Hand Slots Max Level"]),
-                float.Parse(hostConfig["Hand Slots Multiplier"], CultureInfo.InvariantCulture),
+                handSlotConfig.maxLevel,
+                handSlotConfig.multiplier,
                 HandSlots.HandSlotsUpdate
             );
         }
 
-        if (bool.Parse(hostConfig["Loot Value Enabled"]))
+        if (lootValueConfig.isEnabled)
         {
             CreateSkill(UpgradeType.Value,
                 "Loot Value",
@@ -94,14 +103,14 @@ internal class SkillList
                 "VAL",
                 "Loot Value",
                 1,
-                int.Parse(hostConfig["Loot Value Max Level"]),
-                float.Parse(hostConfig["Loot Value Multiplier"], CultureInfo.InvariantCulture),
+                lootValueConfig.maxLevel,
+                lootValueConfig.multiplier,
                 LootValue.LootValueUpdate,
                 true
             );
         }
         
-        if (bool.Parse(hostConfig["Strength Enabled"]))
+        if (strengthConfig.isEnabled)
         {
             CreateSkill(UpgradeType.Strength,
                 "Strength",
@@ -109,13 +118,13 @@ internal class SkillList
                 "STR",
                 "Weight Reduction",
                 1,
-                int.Parse(hostConfig["Strength Max Level"]),
-                float.Parse(hostConfig["Strength Multiplier"], CultureInfo.InvariantCulture),
+                strengthConfig.maxLevel,
+                strengthConfig.multiplier,
                 Strength.StrengthUpdate
             );
         }
 
-        if (bool.Parse(hostConfig["Jump Height Enabled"]))
+        if (jumpHeightConfig.isEnabled)
         {
             CreateSkill(UpgradeType.JumpHeight,
                 "Jump Height",
@@ -123,12 +132,12 @@ internal class SkillList
                 "JMP",
                 "Jump Height",
                 1,
-                int.Parse(hostConfig["Jump Height Max Level"]),
-                float.Parse(hostConfig["Jump Height Multiplier"], CultureInfo.InvariantCulture)
+                jumpHeightConfig.maxLevel,
+                jumpHeightConfig.multiplier
             );
         }
 
-        if (bool.Parse(hostConfig["Sprint Speed Enabled"]))
+        if (sprintSpeedConfig.isEnabled)
         {
             CreateSkill(UpgradeType.SprintSpeed,
                 "Sprint Speed",
@@ -136,8 +145,8 @@ internal class SkillList
                 "SPD",
                 "Sprint Speed",
                 1,
-                int.Parse(hostConfig["Sprint Speed Max Level"]),
-                float.Parse(hostConfig["Sprint Speed Multiplier"], CultureInfo.InvariantCulture)
+                sprintSpeedConfig.maxLevel,
+                sprintSpeedConfig.multiplier
             );
         }
     }

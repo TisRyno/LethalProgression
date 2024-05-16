@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using UnityEngine;
 using HarmonyLib;
-using BepInEx.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Logging;
@@ -10,6 +9,8 @@ using LethalProgression.Config;
 using LethalProgression.GUI.XPBar;
 using LethalProgression.GUI.Skills;
 using LethalProgression.GUI.HandSlot;
+using LethalProgression.LessShitConfig;
+using System;
 
 namespace LethalProgression;
 
@@ -26,8 +27,6 @@ internal class LethalPlugin : BaseUnityPlugin
     internal static bool ReservedSlots;
     public static LethalPlugin Instance { get; private set; }
 
-    public static ModConfig ModConfig { get; private set; }
-
     public static XPBarGUI XPBarGUI { get; private set; }
 
     public static SkillsGUI SkillsGUI { get; private set; }
@@ -42,8 +41,6 @@ internal class LethalPlugin : BaseUnityPlugin
         SkillsGUI = new();
         SlotTemplate = new();
 
-        ModConfig = new(Config);
-
         var harmony = new Harmony(modGUID);
         harmony.PatchAll();
 
@@ -51,22 +48,43 @@ internal class LethalPlugin : BaseUnityPlugin
 
         Log = Logger;
 
-        Log.LogInfo("Lethal Progression loaded.");
+        Log.LogInfo("Lethal Progression initialised.");
+
+        LessShitConfigSystem.RegisterSection<IGeneralConfig>();
+        LessShitConfigSystem.RegisterSection<IBatteryLifeConfig>();
+        LessShitConfigSystem.RegisterSection<IHandSlotsConfig>();
+        LessShitConfigSystem.RegisterSection<IHealthRegenConfig>();
+        LessShitConfigSystem.RegisterSection<IJumpHeightConfig>();
+        LessShitConfigSystem.RegisterSection<ILootValueConfig>();
+        LessShitConfigSystem.RegisterSection<ISprintSpeedConfig>();
+        LessShitConfigSystem.RegisterSection<IStaminaConfig>();
+        LessShitConfigSystem.RegisterSection<IStrengthConfig>();
+        
+        LessShitConfigSystem.Bake(Config);
+
+        Log.LogInfo("Lethal Progression Config loaded.");
 
         foreach (var plugin in Chainloader.PluginInfos)
         {
-            if (plugin.Value.Metadata.GUID.IndexOf("ReservedItem") >= 0)
-                ReservedSlots = true;
-
-            if (plugin.Value.Metadata.GUID.IndexOf("mikestweaks") >= 0)
+            var id = plugin.Value.Metadata.GUID;
+            if (id.Contains("ReservedItem")) // CecerNote: This would match anything with "ReservedItem" in. This should be more carefullly checked. Either way I changed it to Contains instead of IndexOf
             {
-                // Get "ExtraItemSlots" config entry from Mike's Tweaks
-                ConfigEntryBase[] mikesEntries = plugin.Value.Instance.Config.GetConfigEntries();
+                ReservedSlots = true;
+                break; // Break out of the loop. We don't need to check the rest of the plugins.
+            }
 
-                foreach (var entry in mikesEntries)
-                    if (entry.Definition.Key == "ExtraItemSlots")
-                        if (int.Parse(entry.GetSerializedValue()) > 0)
-                            ReservedSlots = true;
+            if (id.Contains("mikestweaks")) // CecerNote: This would match anything with "mikestweaks" in. This should be more carefullly checked. Either way I changed it to Contains instead of IndexOf
+            {
+                var mikesFound = plugin.Value.Instance.Config.GetConfigEntries()
+                    .Where(entry => entry.Definition.Key == "ExtraItemSlots") // CecerNote: Could it be an issue only checking the key and not the section? I assume not currently but maybe in the future if they add something else?
+                    .Where(entry => int.TryParse(entry.GetSerializedValue(), out int i) && i > 0)
+                    .Any();
+
+                if (mikesFound)
+                {
+                    ReservedSlots = true;
+                    break; // Break out of the loop. We don't need to check the rest of the plugins.
+                }
             }
         }
     }

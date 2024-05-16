@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using HarmonyLib;
+using LethalProgression.Config;
+using LethalProgression.LessShitConfig;
 using LethalProgression.Saving;
 using LethalProgression.Skills;
 
@@ -12,9 +14,9 @@ internal class StartOfRoundPatch
     [HarmonyPatch(typeof(StartOfRound), "FirePlayersAfterDeadlineClientRpc")]
     private static void ResetXPValues(StartOfRound __instance)
     {
-        IDictionary<string, string> hostConfig = LethalPlugin.ModConfig.hostConfig;
+        IGeneralConfig generalConfig = LessShitConfigSystem.GetActive<IGeneralConfig>();
 
-        if (bool.Parse(hostConfig["Keep progress"]))
+        if (generalConfig.keepProgress)
             return;
         
         var xpInstance = LP_NetworkManager.xpInstance;

@@ -1,4 +1,6 @@
-﻿using LethalProgression.Skills;
+﻿using LethalProgression.Config;
+using LethalProgression.LessShitConfig;
+using LethalProgression.Skills;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -114,13 +116,15 @@ internal class SkillsGUI
         minusTwo.SetActive(show);
         minusOne.SetActive(show);
 
-        if (!bool.Parse(LethalPlugin.ModConfig.hostConfig["Disable Unspec"]))
+        IGeneralConfig generalConfig = LessShitConfigSystem.GetActive<IGeneralConfig>();
+
+        if (!generalConfig.disableUnspec)
         {
             GameObject unSpecHelpText = infoPanel.transform.GetChild(9).gameObject;
             unSpecHelpText.SetActive(!show);
         }
 
-        if (bool.Parse(LethalPlugin.ModConfig.hostConfig["Unspec in Orbit Only"]))
+        if (generalConfig.enableUnspecInOrbit)
         {
             GameObject unSpecHelpText = infoPanel.transform.GetChild(9).gameObject;
             unSpecHelpText.transform.GetComponent<TextMeshProUGUI>().SetText("Return to orbit to unspec.");
