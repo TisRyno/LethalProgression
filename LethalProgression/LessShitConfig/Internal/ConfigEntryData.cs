@@ -50,7 +50,14 @@ namespace LethalProgression.LessShitConfig.Internal
 
         public void Bind(ConfigFile file)
         {
-            var bindMethod = typeof(ConfigFile).GetMethod("Bind").MakeGenericMethod(Property.PropertyType);
+            var bindMethod = typeof(ConfigFile).GetMethod(
+                "Bind",
+                new Type[] {
+                    typeof(ConfigDefinition),
+                    Type.MakeGenericMethodParameter(0),
+                    typeof(ConfigDescription)
+                }
+            ).MakeGenericMethod(Property.PropertyType);
             bindMethod.Invoke(file, new List<object> { Definition, DefaultValue, Description }.ToArray());
         }
     }

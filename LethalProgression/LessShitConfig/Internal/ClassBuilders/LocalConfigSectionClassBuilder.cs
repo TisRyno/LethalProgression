@@ -12,7 +12,7 @@ namespace LethalProgression.LessShitConfig.Internal.ClassBuilders
         private readonly ConfigFile configFile;
 
         protected override Type ConfigBaseType => typeof(LocalConfigBase);
-        private ConstructorInfo BaseConstructor => ConfigBaseType.GetConstructor(new List<Type> { typeof(string), typeof(ConfigFile) }.ToArray());
+        private ConstructorInfo BaseConstructor => ConfigBaseType.GetConstructor(new Type[] { typeof(string), typeof(ConfigFile) });
 
         public LocalConfigSectionClassBuilder(ConfigSectionData section, ConfigFile config) : base(section)
         {
@@ -36,7 +36,7 @@ namespace LethalProgression.LessShitConfig.Internal.ClassBuilders
 
         protected override AbstractConfigBase ConstructGeneratedType(Type type)
         {
-            return (AbstractConfigBase) Activator.CreateInstance(type, new List<object> { sectionData.Name, configFile }.ToArray());
+            return (AbstractConfigBase) Activator.CreateInstance(type, new object[] { sectionData.Name, configFile });
         }
 
         public new LocalConfigBase Build() => (LocalConfigBase) base.Build();

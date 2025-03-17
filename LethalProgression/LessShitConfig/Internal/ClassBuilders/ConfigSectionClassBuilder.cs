@@ -34,7 +34,7 @@ namespace LethalProgression.LessShitConfig.Internal.ClassBuilders
             typeBuilder = module.DefineType(section.Name, TypeAttributes.Public, ConfigBaseType, new List<Type> { section.InterfaceType }.ToArray());
 
             // We will need a constructor. Let's START creating this.
-            var constructor = typeBuilder.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, null);
+            var constructor = typeBuilder.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, new Type[] { typeof(string), typeof(ConfigFile) });
             constructorGenerator = constructor.GetILGenerator();
 
             // We need to call the base constructor. We do this in a seperate method to make subclasses able to have different constructor arguments.
@@ -76,7 +76,7 @@ namespace LethalProgression.LessShitConfig.Internal.ClassBuilders
             #endregion
 
             // The getter of a property is actually just a method internally. Let's create that method
-            var propertyGetName = $"PropGet_{entryProp.Name}";
+            var propertyGetName = $"get_{entryProp.Name}";
             var propertyGetMethod = typeBuilder.DefineMethod(propertyGetName, propertyMethodAttributes, entryType, null);
             var propertyGetGenerator = propertyGetMethod.GetILGenerator();
 
