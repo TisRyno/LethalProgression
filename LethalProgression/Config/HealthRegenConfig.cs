@@ -17,6 +17,6 @@ interface IHealthRegenConfig
 
     [ConfigName("Health Regen Multiplier")]
     [ConfigDescription("How much does the health regen skill increase per level?")]
-    [ConfigDefault(0.05f)]
+    [ConfigDefault(0.5f)]
     float multiplier { get; }
 }
