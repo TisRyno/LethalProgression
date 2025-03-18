@@ -62,6 +62,8 @@ internal class LethalPlugin : BaseUnityPlugin
         
         LessShitConfigSystem.Bake(Config);
 
+        LessShitConfigSystem.SerializeLocalConfigs();
+
         Log.LogInfo("Lethal Progression Config loaded.");
 
         foreach (var plugin in Chainloader.PluginInfos)
