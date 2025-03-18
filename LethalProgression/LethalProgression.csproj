@@ -24,7 +24,7 @@
         <!-- Version of the game supported by the plugin -->
         <!-- The value must be the same than the one in CI/CD -->
         <!-- https://www.nuget.org/packages/LethalCompany.GameLibs.Steam -->
-        <GameVersion>50.0.1-ngd.0</GameVersion>
+        <GameVersion>69.0.1-ngd.0</GameVersion>
 
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
