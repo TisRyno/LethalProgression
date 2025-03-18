@@ -4,6 +4,7 @@ using LethalProgression.Skills.Upgrades;
 
 namespace LethalProgression.Patches;
 
+[HarmonyPatch]
 internal class GrabbableObjectPatch
 {
     [HarmonyTranspiler]
