@@ -16,14 +16,14 @@ namespace LethalProgression.LessShitConfig.Sources
         public override object GetValue(ConfigDefinition definition)
         {
             IDictionary<ConfigDefinition, ConfigEntryBase> asDict = configFile;
-            if (!asDict.TryGetValue(definition, out ConfigEntryBase entry))
+            if (asDict.TryGetValue(definition, out ConfigEntryBase entry))
                 return entry.BoxedValue;
             throw new ArgumentException($"The config entry {definition} is not registered.", "definition");
         }
 
         public override T GetValue<T>(ConfigDefinition definition)
         {
-            if (!configFile.TryGetEntry(definition, out ConfigEntry<T> entry))
+            if (configFile.TryGetEntry(definition, out ConfigEntry<T> entry))
                 return entry.Value;
             throw new ArgumentException($"The config entry {definition} is not registered.", "definition");
         }

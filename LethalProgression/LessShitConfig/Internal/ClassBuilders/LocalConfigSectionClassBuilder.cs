@@ -1,7 +1,6 @@
 ﻿using BepInEx.Configuration;
 using LethalProgression.LessShitConfig.Sources;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -12,7 +11,7 @@ namespace LethalProgression.LessShitConfig.Internal.ClassBuilders
         private readonly ConfigFile configFile;
 
         protected override Type ConfigBaseType => typeof(LocalConfigBase);
-        private ConstructorInfo BaseConstructor => ConfigBaseType.GetConstructor(new Type[] { typeof(string), typeof(ConfigFile) });
+        protected override ConstructorInfo BaseConstructor => ConfigBaseType.GetConstructor(new Type[] { typeof(string), typeof(ConfigFile) });
 
         public LocalConfigSectionClassBuilder(ConfigSectionData section, ConfigFile config) : base(section)
         {
@@ -22,7 +21,7 @@ namespace LethalProgression.LessShitConfig.Internal.ClassBuilders
         protected override void AppendBaseConstructorOpcodes()
         {
             // The base constructor is LocalConfigBase(string sectionName, ConfigFile config)
-            #region EMIT: base(sectionName)
+            #region EMIT: base(sectionName, config)
             // Push `this` on to the stack.
             constructorGenerator.Emit(OpCodes.Ldarg_0);
             // Push `sectionName` on to the stack.

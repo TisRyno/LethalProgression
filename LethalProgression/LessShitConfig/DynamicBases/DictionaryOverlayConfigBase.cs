@@ -3,25 +3,25 @@ using System.Collections.Generic;
 
 namespace LethalProgression.LessShitConfig.Sources
 {
-    public class DictionaryOverlayConfigBase
+    public abstract class DictionaryOverlayConfigBase : AbstractConfigBase
     {
         private readonly AbstractConfigBase baseConfig;
         private readonly IDictionary<ConfigDefinition, object> overlay;
 
-        public DictionaryOverlayConfigBase(AbstractConfigBase baseConfig, IDictionary<ConfigDefinition, object> overlay)
+        public DictionaryOverlayConfigBase(string sectionName, AbstractConfigBase baseConfig, IDictionary<ConfigDefinition, object> overlay) : base(sectionName)
         {
             this.baseConfig = baseConfig;
             this.overlay = overlay;
         }
 
-        public object GetValue(ConfigDefinition definition)
+        public override object GetValue(ConfigDefinition definition)
         {
             if (overlay.TryGetValue(definition, out object value))
                 return value;
             return baseConfig.GetValue(definition);
         }
 
-        public T GetValue<T>(ConfigDefinition definition)
+        public override T GetValue<T>(ConfigDefinition definition)
         {
             if (overlay.TryGetValue(definition, out object value))
                 return (T) value;

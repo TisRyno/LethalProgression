@@ -14,7 +14,7 @@ namespace LethalProgression.LessShitConfig.Internal.ClassBuilders
 
         protected override Type ConfigBaseType => typeof(DictionaryOverlayConfigBase);
 
-        private ConstructorInfo BaseConstructor => ConfigBaseType.GetConstructor(new List<Type> { typeof(AbstractConfigBase), typeof(Dictionary<ConfigDefinition, object>) }.ToArray());
+        protected override ConstructorInfo BaseConstructor => ConfigBaseType.GetConstructor(new Type[] { typeof(string), typeof(AbstractConfigBase), typeof(Dictionary<ConfigDefinition, object>) });
 
         public DictionaryOverlayConfigSectionClassBuilder(ConfigSectionData section, AbstractConfigBase baseConfig, IDictionary<ConfigDefinition, object> overlay) : base(section)
         {
@@ -24,22 +24,26 @@ namespace LethalProgression.LessShitConfig.Internal.ClassBuilders
 
         protected override void AppendBaseConstructorOpcodes()
         {
-            // The base constructor is LocalConfigBase(AbstractConfigBase baseConfig, DictionaryOverlayConfigSectionClassBuilder overlay)
-            #region EMIT: base(sectionName)
+            // The base constructor is DictionaryOverlayConfigBase(string sectionName, AbstractConfigBase baseConfig, DictionaryOverlayConfigSectionClassBuilder overlay)
+            #region EMIT: base(sectionName, baseConfig, overlay)
             // Push `this` on to the stack.
             constructorGenerator.Emit(OpCodes.Ldarg_0);
-            // Push `baseConfig` on to the stack.
+            // Push `sectionName` on to the stack.
             constructorGenerator.Emit(OpCodes.Ldarg_1);
-            // Push `overlay` on to the stack.
+            // Push `baseConfig` on to the stack.
             constructorGenerator.Emit(OpCodes.Ldarg_2);
-            // Call the base constructor (thus popping all three values back off the stack)
+            // Push `overlay` on to the stack.
+            constructorGenerator.Emit(OpCodes.Ldarg_3);
+            // Call the base constructor (thus popping all four values back off the stack)
             constructorGenerator.Emit(OpCodes.Call, BaseConstructor);
             #endregion
         }
 
         protected override AbstractConfigBase ConstructGeneratedType(Type type)
         {
-            return (AbstractConfigBase) Activator.CreateInstance(type, new List<object> { baseConfig, overlay }.ToArray());
+            return (AbstractConfigBase) Activator.CreateInstance(type, new object[] { sectionData.Name, baseConfig, overlay });
         }
+        
+        public new DictionaryOverlayConfigBase Build() => (DictionaryOverlayConfigBase) base.Build();
     }
 }

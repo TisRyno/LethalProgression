@@ -21,7 +21,7 @@ namespace LethalProgression.LessShitConfig
         private static readonly IDictionary<Type, ConfigSectionData> sections = new Dictionary<Type, ConfigSectionData>();
 
         private static readonly IDictionary<Type, LocalConfigBase> localSections = new Dictionary<Type, LocalConfigBase>();
-        private static readonly IDictionary<Type, AbstractConfigBase> activeSections = new Dictionary<Type, AbstractConfigBase>();
+        private static readonly IDictionary<Type, DictionaryOverlayConfigBase> activeSections = new Dictionary<Type, DictionaryOverlayConfigBase>();
 
         private static readonly IDictionary<ConfigDefinition, object> hostConfigOverlay = new Dictionary<ConfigDefinition, object>();
 
@@ -61,21 +61,35 @@ namespace LethalProgression.LessShitConfig
             if (localSections.Count > 0)
                 throw new InvalidOperationException("Calling Bind multiple times is not allowed.");
 
-            foreach (var entry in entries.Values)
+            foreach (ConfigEntryData entry in entries.Values)
             {
                 entry.Bind(configFile);
             }
 
-            foreach (var section in sections)
+            foreach (KeyValuePair<Type, ConfigSectionData> section in sections)
             {
-                LocalConfigBase localSection = new LocalConfigSectionClassBuilder(section.Value, configFile).Build();
+                LocalConfigSectionClassBuilder sectionBuilder = new LocalConfigSectionClassBuilder(section.Value, configFile);
+
+                foreach (ConfigEntryData entry in section.Value.Entries) {
+                    sectionBuilder.AddEntry(entry);
+                }
+
+                LocalConfigBase localSection = sectionBuilder.Build();
                 localSections[section.Key] = localSection;
-                activeSections[section.Key] = new DictionaryOverlayConfigSectionClassBuilder(section.Value, localSection, hostConfigOverlay).Build();
+
+                DictionaryOverlayConfigSectionClassBuilder overlayBuilder = new DictionaryOverlayConfigSectionClassBuilder(section.Value, localSection, hostConfigOverlay);
+
+                foreach (ConfigEntryData entry in section.Value.Entries) {
+                    overlayBuilder.AddEntry(entry);
+                }
+
+                activeSections[section.Key] = overlayBuilder.Build();
             }
         }
 
 
         internal static T GetActive<T>() => (T)(object)activeSections[typeof(T)];
+        
         internal static string SerializeLocalConfigs()
         {
             IDictionary<string, IDictionary<string, string>> entryDict = new Dictionary<string, IDictionary<string, string>>();
