@@ -69,16 +69,16 @@ internal class LethalPlugin : BaseUnityPlugin
         foreach (var plugin in Chainloader.PluginInfos)
         {
             var id = plugin.Value.Metadata.GUID;
-            if (id.Contains("ReservedItem")) // CecerNote: This would match anything with "ReservedItem" in. This should be more carefullly checked. Either way I changed it to Contains instead of IndexOf
+            if (id.Contains("ReservedItem"))
             {
                 ReservedSlots = true;
                 break; // Break out of the loop. We don't need to check the rest of the plugins.
             }
 
-            if (id.Contains("mikestweaks")) // CecerNote: This would match anything with "mikestweaks" in. This should be more carefullly checked. Either way I changed it to Contains instead of IndexOf
+            if (id.Contains("mikestweaks")) 
             {
                 var mikesFound = plugin.Value.Instance.Config.GetConfigEntries()
-                    .Where(entry => entry.Definition.Key == "ExtraItemSlots") // CecerNote: Could it be an issue only checking the key and not the section? I assume not currently but maybe in the future if they add something else?
+                    .Where(entry => entry.Definition.Key == "ExtraItemSlots")
                     .Where(entry => int.TryParse(entry.GetSerializedValue(), out int i) && i > 0)
                     .Any();
 
