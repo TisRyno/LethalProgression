@@ -18,13 +18,6 @@ internal class HUDManagerPatch
     private static GameObject levelText;
     private static float levelTextTime;
 
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(HUDManager), "PingScan_performed")]
-    private static void DebugScan()
-    {
-       LP_NetworkManager.xpInstance.updateTeamXPClientMessage.SendServer(10);
-    }
-
     [HarmonyPrefix]
     [HarmonyPatch(typeof(HUDManager), "AddNewScrapFoundToDisplay")]
     private static void GiveXPForScrap(GrabbableObject GObject)
