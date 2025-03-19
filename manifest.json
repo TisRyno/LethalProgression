@@ -1,7 +1,7 @@
 {
   "name": "LethalProgression",
-  "version_number": "1.1.1",
-  "website_url": "https://github.com/stoneman2/LethalProgression",
+  "version_number": "2.0.0",
+  "website_url": "https://github.com/TisRyno/LethalProgression",
   "description": "Leveling and skillpoints!",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100"

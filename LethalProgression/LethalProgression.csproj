@@ -24,7 +24,7 @@
         <!-- Version of the game supported by the plugin -->
         <!-- The value must be the same than the one in CI/CD -->
         <!-- https://www.nuget.org/packages/LethalCompany.GameLibs.Steam -->
-        <GameVersion>49.0.0-alpha.1</GameVersion>
+        <GameVersion>69.0.1-ngd.0</GameVersion>
 
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
@@ -62,7 +62,7 @@
         <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
         <PackageReference Include="BepInEx.Core" Version="5.*" />
         <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
-        <PackageReference Include="Xilophor.LethalNetworkAPI" Version="2.*" PrivateAssets="all"/>
+        <PackageReference Include="Xilophor.LethalNetworkAPI" Version="2.*" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
@@ -72,7 +72,7 @@
     <!-- Avoid that the game's assemblies are copied to the plugin's target directory -->
     <Target Name="ClearReferenceCopyLocalPaths" AfterTargets="ResolveAssemblyReferences">
         <ItemGroup>
-            <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)"/>
+            <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" />
         </ItemGroup>
     </Target>
 
@@ -95,8 +95,8 @@
         <DllNames Include="UnityEngine.AssetBundleModule" />
         <DllNames Include="UnityEngine.AudioModule" />
         <DllNames Include="UnityEngine.CoreModule" />
-
-        <Reference Include="@(DllNames)" HintPath="$(AssemblyGameDir)%(Identity).dll"/>
+        
+        <Reference Include="@(DllNames)" HintPath="$(AssemblyGameDir)%(Identity).dll" />
     </ItemGroup>
 
     <ItemGroup Condition="$(CI) != 'true'">
@@ -111,7 +111,7 @@
         <DllNames Include="MonoMod.RuntimeDetour" />
         <DllNames Include="MonoMod.Utils" />
 
-        <Reference Include="@(DllNames)" HintPath="$(BepInExCoreDir)%(Identity).dll"/>
+        <Reference Include="@(DllNames)" HintPath="$(BepInExCoreDir)%(Identity).dll" />
     </ItemGroup>
 
     <ItemGroup>
@@ -138,17 +138,17 @@
     <Target Condition="'$(CI)' != 'true' And $(StartGame)" Name="StartGame" AfterTargets="PostBuildEvent">
         <!-- Create a temporary copy of the plugin in the target directory -->
         <!-- This is a workaround because if we copy it directly to the game's plugin directory, an error is thrown because the game is using the plugin -->
-        <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFiles="$(TargetDir)$(TargetFileName).tmp"/>
+        <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFiles="$(TargetDir)$(TargetFileName).tmp" />
         <!-- Move the plugin temporary copy to the game's plugin directory -->
         <!-- The move command will overwrite the plugin if it already exists and no error will be thrown -->
         <!-- We can't move the original plugin because it is used by reference for Test project -->
-        <Move SourceFiles="$(TargetDir)$(TargetFileName).tmp" DestinationFiles="$(PluginGameDir)$(TargetFileName)"/>
+        <Move SourceFiles="$(TargetDir)$(TargetFileName).tmp" DestinationFiles="$(PluginGameDir)$(TargetFileName)" />
         <!-- Kill every instance of the game, ignore errors if none are running -->
-        <Exec Command='taskkill /F /IM "$(GameExe)" /T || exit 0'/>
+        <Exec Command="taskkill /F /IM &quot;$(GameExe)&quot; /T || exit 0" />
         <!-- Start new instances of the game as many times as specified in NumberOfClients -->
         <!-- The ping command is used to apply a delay between each instance, otherwise only one BepInEx debug terminal would be opened -->
         <!-- Use ping command is a workaround because Windows doesn't have a sleep command -->
-        <Exec Command='for /L %%i in (1,1,$(NumberOfClients)) do (start "" "$(GameExePath)" &amp; if %%i lss $(NumberOfClients) (ping 127.0.0.1 -n $(PingDelay) > nul))'/>
+        <Exec Command="for /L %%i in (1,1,$(NumberOfClients)) do (start &quot;&quot; &quot;$(GameExePath)&quot; &amp; if %%i lss $(NumberOfClients) (ping 127.0.0.1 -n $(PingDelay) &gt; nul))" />
     </Target>
 
     <!-- Build the plugin for Thunderstore publication -->
@@ -158,6 +158,6 @@
             <PluginVersion>$(MinVerMajor).$(MinVerMinor).$(MinVerPatch)</PluginVersion>
         </PropertyGroup>
         <!-- https://github.com/thunderstore-io/thunderstore-cli/wiki -->
-        <Exec Command="tcli build --config-path $(SolutionDir)thunderstore.toml --package-version $(PluginVersion)"/>
+        <Exec Command="tcli build --config-path $(SolutionDir)thunderstore.toml --package-version $(PluginVersion)" />
     </Target>
 </Project>
