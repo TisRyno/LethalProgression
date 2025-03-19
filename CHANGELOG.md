@@ -1,5 +1,40 @@
 # Changelog
 
+## [2.0.0](https://github.com/TisRyno/LethalProgression/compare/v1.7.4...v2.0.0) (2025-03-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* v2.0.0
+
+### Features
+
+* merge PR [#26](https://github.com/TisRyno/LethalProgression/issues/26) for new config setting ([4a041d1](https://github.com/TisRyno/LethalProgression/commit/4a041d1274cf4453e1af2ff4414316a022f90942))
+* new config setup ([0aa76c4](https://github.com/TisRyno/LethalProgression/commit/0aa76c4426b44d53de0ac7e3260737da0578b7c6))
+* remove check for mikestweaks compatibility ([7fd1e2f](https://github.com/TisRyno/LethalProgression/commit/7fd1e2ff429109bd93865f57107bbcef453063a5))
+* remove oxygen skill ([d7a216b](https://github.com/TisRyno/LethalProgression/commit/d7a216b96d6ac9d7237c342eefe96909449e4718))
+* sprint speed transpiler improved ([5cdd58a](https://github.com/TisRyno/LethalProgression/commit/5cdd58a764a16454f9271228fcbacd298b870b37))
+* v2.0.0 ([278796d](https://github.com/TisRyno/LethalProgression/commit/278796d43f3aebe276b2a66daa8fcd507e98354d))
+
+
+### Bug Fixes
+
+* cannot go below 0 points in a skill ([5612576](https://github.com/TisRyno/LethalProgression/commit/561257639948678b3e4508b54a87dc3f17ddaded))
+* config system now works! ([9a1420c](https://github.com/TisRyno/LethalProgression/commit/9a1420c57f2475f7021534ca372b687d39505480))
+* debug spam on scrap multiplier ([5f8d276](https://github.com/TisRyno/LethalProgression/commit/5f8d2767c4e1285de2d821e72751395ecd4ce0fd))
+* extra comma ([8544221](https://github.com/TisRyno/LethalProgression/commit/854422160ce2e92b3d3f80e6765d5051cd4a052e))
+* hp regen allowing instant death (whoops) ([12dbb78](https://github.com/TisRyno/LethalProgression/commit/12dbb78532f2aca05705e5587be13a062463ccd2))
+* jump height back to local-only ([59d0f63](https://github.com/TisRyno/LethalProgression/commit/59d0f6332afb73697a4003c5c927bc4cbd17add5))
+* jump height moved to transpiler ([8081874](https://github.com/TisRyno/LethalProgression/commit/808187436b2314d25e2af597c63f2c895e400df6))
+* missing patch ([80ca27c](https://github.com/TisRyno/LethalProgression/commit/80ca27c28228d1be12795ba8a8b17915a2f99769))
+* remove jump update ([0787e3e](https://github.com/TisRyno/LethalProgression/commit/0787e3e0e073736ee264a37b29db879707adb0ff))
+* stuff I forgot to commit 8 months ago ([dff04c5](https://github.com/TisRyno/LethalProgression/commit/dff04c5bce0daf81a272210dada1cd778c33b8b5))
+
+
+### Performance Improvements
+
+* preload local config ([a88d02f](https://github.com/TisRyno/LethalProgression/commit/a88d02fea4e7be08494994310702d1deb56cddef))
+
 ## [1.7.4](https://github.com/TisRyno/LethalProgression/compare/v1.7.3...v1.7.4) (2024-04-11)
 
 
