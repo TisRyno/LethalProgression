@@ -15,6 +15,11 @@ interface IGeneralConfig
     [ConfigDefault(30)]
     int quotaMultiplier { get; }
 
+    [ConfigName("Starting Skill Points")]
+    [ConfigDescription("The starting skill points upon new lobby, or after ejection.")]
+    [ConfigDefault(5)]
+    int startSkillPoints { get; }
+
     [ConfigName("XP Minimum")]
     [ConfigDescription("Minimum XP to level up.")]
     [ConfigDefault(40)]
