@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.1.0](https://github.com/TisRyno/LethalProgression/compare/v2.0.0...v2.1.0) (2025-04-16)
+
+
+### Features
+
+* add starting skill points config ([9027160](https://github.com/TisRyno/LethalProgression/commit/9027160d6cf8477c514516e5459d76ce684f2734))
+
+
+### Bug Fixes
+
+* disconnect error ([17fd5a9](https://github.com/TisRyno/LethalProgression/commit/17fd5a945c34f576d44b7679c15060d29e7b3d3a))
+* game object cleanup ([9d930e7](https://github.com/TisRyno/LethalProgression/commit/9d930e79c99ca27f24200b463af12d3702dcceb3))
+* hp regen exceeding max hp ([715a188](https://github.com/TisRyno/LethalProgression/commit/715a18858bdfb41dc81221dcb1f958aead54c491))
+* loot level not syncing correctly ([6f70cd4](https://github.com/TisRyno/LethalProgression/commit/6f70cd42b06ddd425ce4273e86f0d3d379bb7988))
+
 ## [2.0.0](https://github.com/TisRyno/LethalProgression/compare/v1.7.4...v2.0.0) (2025-03-19)
 
 
