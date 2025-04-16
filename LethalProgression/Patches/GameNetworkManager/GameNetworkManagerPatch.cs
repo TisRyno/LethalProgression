@@ -8,11 +8,12 @@ namespace LethalProgression.Patches;
 [HarmonyPatch]
 internal class GameNetworkManagerPatch
 {
-    [HarmonyPostfix]
+    [HarmonyPrefix]
     [HarmonyPatch(typeof(GameNetworkManager), "Disconnect")]
+    [HarmonyPriority(Priority.First)]
     private static void DisconnectXPHandler()
     {
-        if (LP_NetworkManager.xpInstance.skillList.GetSkill(UpgradeType.Value).GetLevel() != 0)
+        if (LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.Value))
         {
             int localLootLevel = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].GetLevel();
 
