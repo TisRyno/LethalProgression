@@ -42,7 +42,14 @@ internal class SkillsGUI
     public void CleanupGUI()
     {
         isMenuOpen = false;
+        
+        skillButtonsList.ForEach(go => GameObject.Destroy(go));
+        GameObject.Destroy(mainPanel);
+        GameObject.Destroy(infoPanel);
+
         skillButtonsList = new List<GameObject>();
+        mainPanel = null;
+        infoPanel = null;
     }
 
     private void CreateAllObjectsIfRequired()

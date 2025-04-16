@@ -35,7 +35,7 @@ namespace LethalProgression.LessShitConfig
         {
             var type = typeof(T);
             
-            LethalPlugin.Log.LogInfo($"RegisterSection: {type.FullName}");
+            LethalPlugin.Log.LogDebug($"RegisterSection: {type.FullName}");
             
             if (sections.ContainsKey(type))
                 throw new ConfigRegistrationException($"The config section defintion has already been registered: {type.FullName}");
