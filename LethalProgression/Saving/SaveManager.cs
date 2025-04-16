@@ -53,7 +53,7 @@ internal static class SaveManager
     {
         saveFileSlot = GameNetworkManager.Instance.saveFileNum;
 
-        LethalPlugin.Log.LogInfo("Saving to slot " + saveFileSlot + 1);
+        LethalPlugin.Log.LogInfo("Saving to slot " + (saveFileSlot + 1));
 
         // If file doesn't exist, create it
         if (!Directory.Exists(GetSavePath()))

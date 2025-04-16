@@ -37,7 +37,7 @@ namespace LethalProgression.LessShitConfig.Internal
                     throw new ConfigRegistrationException($"Non-property members are not allowed in config section definitions: ({member.Name} is {member.MemberType})");
                 }
 
-                LethalPlugin.Log.LogInfo($"Register: {type.Name} = {member.Name}");
+                LethalPlugin.Log.LogDebug($"Register: {type.Name} = {member.Name}");
 
                 var entry = new ConfigEntryData(this, (PropertyInfo)member);
                 Entries.Add(entry);

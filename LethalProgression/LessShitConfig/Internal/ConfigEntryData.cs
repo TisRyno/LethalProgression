@@ -32,7 +32,7 @@ namespace LethalProgression.LessShitConfig.Internal
             var descriptionAttr = property.GetCustomAttribute<ConfigDescriptionAttribute>();
             var defaultValueAttr = property.GetCustomAttribute<ConfigDefaultAttribute>(true);
 
-            LethalPlugin.Log.LogInfo($"Register Property: {section.Name} {name.name}");
+            LethalPlugin.Log.LogDebug($"Register Property: {section.Name} {name.name}");
 
             Section = section;
             Property = property;
