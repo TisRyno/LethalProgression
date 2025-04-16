@@ -354,13 +354,13 @@ internal class LC_XP : NetworkBehaviour
     public void UpdateTeamLootLevel_C2SMessage(int change, ulong clientId) {
         int currentLootLevel = teamLootLevel.Value;
 
-        if (currentLootLevel + change < 0) {
+        if (currentLootLevel + change <= 0) {
             teamLootLevel.Value = 0;
         } else {
             teamLootLevel.Value += change;
         }
 
-        LethalPlugin.Log.LogInfo($"Changed team loot value by {change} turning into {teamLootLevel.Value}.");
+        LethalPlugin.Log.LogDebug($"[{clientId}] Requested {change} to Team Loot Value, new value: {teamLootLevel.Value}");
     }
 
     /////////////////////////////////////////////////

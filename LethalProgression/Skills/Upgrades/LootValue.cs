@@ -32,7 +32,8 @@ internal class LootValue
 
     public static void LootValueUpdate(int change)
     {
-        if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.Value))
+        // Do not use `IsSkillValid()` as it also checks the skill has > 0 points put into it.
+        if (!LP_NetworkManager.xpInstance.skillList.skills.ContainsKey(UpgradeType.Value))
             return;
 
         LP_NetworkManager.xpInstance.updateTeamLootLevelClientMessage.SendServer(change);
