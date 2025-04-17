@@ -1,18 +1,25 @@
 using System.Collections.Generic;
 using HarmonyLib;
 using LethalProgression.Skills.Upgrades;
+using Unity.Netcode;
 
 namespace LethalProgression.Patches;
 
 [HarmonyPatch]
 internal class RoundManagerPatch
 {
-    [HarmonyTranspiler]
-    [HarmonyPatch(typeof(RoundManager), "SpawnScrapInLevel")]
-    static IEnumerable<CodeInstruction> SpawnScrapInLevelTranspiler(IEnumerable<CodeInstruction> instructions)
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(RoundManager), "waitForScrapToSpawnToSync")]
+    [HarmonyPriority(Priority.Last)]
+    public static void OnWaitForScrapToSpawnToSync(ref NetworkObjectReference[] spawnedScrap, ref int[] scrapValues)
     {
-        List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+        List<int> newScrapValues = new List<int>();
 
-        return LootValue.ScrapValueMultiplierOpCode(codes);
+        for(int i = 0; i < scrapValues.Length; i++)
+        {
+            newScrapValues.Add(LootValue.GetNewScrapValueMultiplier(scrapValues[i]));
+        }
+
+        scrapValues = newScrapValues.ToArray();
     }
 }
