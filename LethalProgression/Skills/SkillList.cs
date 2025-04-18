@@ -34,6 +34,7 @@ internal class SkillList
     public void InitializeSkills()
     {
         IHealthRegenConfig hpConfig = LessShitConfigSystem.GetActive<IHealthRegenConfig>();
+        IMaxHealthConfig maxHpConfig = LessShitConfigSystem.GetActive<IMaxHealthConfig>();
         IStaminaConfig staminaConfig = LessShitConfigSystem.GetActive<IStaminaConfig>();
         IBatteryLifeConfig batteryConfig = LessShitConfigSystem.GetActive<IBatteryLifeConfig>();
         IHandSlotsConfig handSlotConfig = LessShitConfigSystem.GetActive<IHandSlotsConfig>();
@@ -46,12 +47,25 @@ internal class SkillList
         {
             CreateSkill(UpgradeType.HPRegen,
                 "Health Regen",
-                "The company installs a basic healer into your suit, letting you regenerate health slowly. Only regenerate up to 100 HP.",
+                "The company installs a basic healer into your suit, letting you regenerate health slowly. Only regenerate up to your max HP.",
                 "HPR",
                 "Health Regeneration",
                 1,
                 hpConfig.maxLevel,
                 hpConfig.multiplier
+            );
+        }
+
+        if (maxHpConfig.isEnabled)
+        {
+            CreateSkill(UpgradeType.MaxHealth,
+                "Max Health",
+                "The company is trialling some new inhalents from exotic moons, giving you a health boost.",
+                "MHP",
+                "Maximum Health",
+                1,
+                maxHpConfig.maxLevel,
+                maxHpConfig.multiplier
             );
         }
 
@@ -72,7 +86,7 @@ internal class SkillList
         {
             CreateSkill(UpgradeType.Battery,
                 "Battery Life",
-                "The company provides you with better batteries. Replace your batteries AT THE SHIP'S CHARGER to see an effect.",
+                "The company provides you with better batteries found from exotic moons. Don't forget to recharge them AT THE SHIP'S CHARGER.",
                 "BAT",
                 "Battery Life",
                 1,

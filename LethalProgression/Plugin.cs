@@ -54,6 +54,7 @@ internal class LethalPlugin : BaseUnityPlugin
         LessShitConfigSystem.RegisterSection<IBatteryLifeConfig>();
         LessShitConfigSystem.RegisterSection<IHandSlotsConfig>();
         LessShitConfigSystem.RegisterSection<IHealthRegenConfig>();
+        LessShitConfigSystem.RegisterSection<IMaxHealthConfig>();
         LessShitConfigSystem.RegisterSection<IJumpHeightConfig>();
         LessShitConfigSystem.RegisterSection<ILootValueConfig>();
         LessShitConfigSystem.RegisterSection<ISprintSpeedConfig>();

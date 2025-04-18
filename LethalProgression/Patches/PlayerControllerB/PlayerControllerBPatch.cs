@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using LethalProgression.Skills.Upgrades;
 using LethalProgression.Skills;
 using UnityEngine;
+using System;
 
 namespace LethalProgression.Patches;
 
@@ -80,12 +81,38 @@ internal class PlayerControllerBPatch
         return codes;
     }
 
+    /// <summary>
+    /// Change the clamping for damage
+    /// `health = Mathf.Clamp(health - damageNumber, 0, 100)`
+    /// to
+    /// `health = Mathf.Clamp(health - damageNumber, 0, <getNewMaxHP>)`
+    /// </summary>
+    [HarmonyTranspiler]
+    [HarmonyPatch(typeof(PlayerControllerB), "DamagePlayer")]
+    static IEnumerable<CodeInstruction> DamagePlayerTranspiler(IEnumerable<CodeInstruction> instructions)
+    {
+        List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+
+        codes = MaxHP.UncapMaxHealth(codes);
+
+        return codes;
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch(typeof(PlayerControllerB), "LateUpdate")]
     private static void HPRegenUpdate(PlayerControllerB __instance)
     {
+        int maxHealth = 100;
+
         if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.HPRegen))
             return;
+
+        if (LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.MaxHealth))
+        {
+            Skill maxHpSkill = LP_NetworkManager.xpInstance.skillList.GetSkill(UpgradeType.MaxHealth);
+
+            maxHealth *= (int) Math.Round(1 + maxHpSkill.GetTrueValue());
+        }
 
         if (__instance.healthRegenerateTimer > 0f)
         {
@@ -96,7 +123,7 @@ internal class PlayerControllerBPatch
         if (__instance.health >= 20)
             __instance.MakeCriticallyInjured(false);
 
-        if (!__instance.isPlayerControlled || __instance.health >= 100 || __instance.isPlayerDead)
+        if (!__instance.isPlayerControlled || __instance.health >= maxHealth || __instance.isPlayerDead)
             return;
         
         Skill skill = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.HPRegen];
