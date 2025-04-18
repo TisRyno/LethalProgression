@@ -10,4 +10,5 @@ public enum UpgradeType
     JumpHeight,
     SprintSpeed,
     Strength,
+    MaxHealth,
 }

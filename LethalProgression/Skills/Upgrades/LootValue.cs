@@ -1,33 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-using HarmonyLib;
+﻿using System;
 
 namespace LethalProgression.Skills.Upgrades;
 
 internal class LootValue
 {
-    public static float GetScrapValueMultiplier(float defaultScrapValueMultiplier)
+    public static int GetNewScrapValueMultiplier(int defaultScrapValue)
     {
         if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.Value))
-            return defaultScrapValueMultiplier;
+            return defaultScrapValue;
 
         float mult = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].GetMultiplier();
         float value = LP_NetworkManager.xpInstance.teamLootLevel.Value * mult;
         float valueMultiplier = 1 + (value / 100f);
+        int newValue = (int) Math.Round(defaultScrapValue * valueMultiplier);
 
-        return defaultScrapValueMultiplier * valueMultiplier;
-    }
+        LethalPlugin.Log.LogDebug($"Current scrap value {defaultScrapValue} multiplied by {valueMultiplier} to {newValue}");
 
-    public static List<CodeInstruction> ScrapValueMultiplierOpCode(List<CodeInstruction> codes)
-    {
-        FieldInfo scrapValueMultiplier = typeof(RoundManager).GetField(nameof(RoundManager.scrapValueMultiplier));
-
-        for (int index = 0; index < codes.Count; index++)
-            if (codes[index].opcode == OpCodes.Ldfld && (FieldInfo) codes[index].operand == scrapValueMultiplier)
-                codes.Insert(index + 1, new CodeInstruction(OpCodes.Call, typeof(LootValue).GetMethod("GetScrapValueMultiplier")));
-
-        return codes;
+        return newValue;
     }
 
     public static void LootValueUpdate(int change)

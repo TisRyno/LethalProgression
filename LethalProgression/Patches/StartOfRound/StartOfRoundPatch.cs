@@ -29,7 +29,7 @@ internal class StartOfRoundPatch
             skill.SetLevel(0);
         }
 
-        xpInstance.SetSkillPoints(generalConfig.startSkillPoints);
+        xpInstance.SetSkillPoints(xpInstance.GetDefaultStartingSkillPoints());
 
         xpInstance.teamXP.Value = 0;
         xpInstance.teamTotalValue.Value = 0;

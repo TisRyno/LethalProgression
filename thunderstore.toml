@@ -7,7 +7,7 @@ repository = "https://thunderstore.io"
 [package]
 namespace = "TisRyno"
 name = "LethalCompanyProgressionPatchFix"
-description = "Leveling and skillpoints through a managed GUI! Patched and bugfixed until official copy updated."
+description = "An RPG-style XP-based levelling and skillpoint system, with a full custom GUI to manage your points."
 websiteUrl = "https://github.com/TisRyno/LethalProgression"
 containsNsfwContent = false
 
