@@ -120,7 +120,6 @@ internal class LC_XP : NetworkBehaviour
 
         playerConnectClientEvent.InvokeServer();
     }
-
     public override void OnDestroy()
     {
         // Network Variable handlers
@@ -173,11 +172,11 @@ internal class LC_XP : NetworkBehaviour
 
     public void PlayerConnect_C2SEvent(ulong clientId)
     {
-        LethalPlugin.Log.LogInfo($"Received PlayerConnect message from {clientId}");
+        LethalPlugin.Log.LogDebug($"Received PlayerConnect message from {clientId}");
 
         LessShitConfigSystem.ClearHostConfigs(); // Clear host config overrides. We are the host.
         var hostConfig = LessShitConfigSystem.SerializeLocalConfigs();
-        LethalPlugin.Log.LogInfo($"Sending config -> {hostConfig}");
+        LethalPlugin.Log.LogDebug($"Sending config -> {hostConfig}");
         sendConfigServerMessage.SendClient(hostConfig, clientId); // Sync the config to connecting player
     }
 
@@ -187,13 +186,13 @@ internal class LC_XP : NetworkBehaviour
 
         if (_sharedData is null)
         {
-            LethalPlugin.Log.LogInfo("Shared data is null!");
+            LethalPlugin.Log.LogDebug("Shared data is null!");
             return;
         }
 
         SaveSharedData sharedData = _sharedData.Value;
 
-        LethalPlugin.Log.LogInfo("Loading Lobby shared data.");
+        LethalPlugin.Log.LogDebug("Loading Lobby shared data.");
 
         teamXP.Value = sharedData.xp;
         teamLevel.Value = sharedData.level;
@@ -201,12 +200,12 @@ internal class LC_XP : NetworkBehaviour
         
         teamXPRequired.Value = CalculateXPRequirement();
 
-        LethalPlugin.Log.LogInfo($"{sharedData.level} current lvl, {sharedData.xp} XP, {sharedData.quota} Profit, {teamXPRequired.Value} teamXPRequired");
+        LethalPlugin.Log.LogDebug($"{sharedData.level} current lvl, {sharedData.xp} XP, {sharedData.quota} Profit, {teamXPRequired.Value} teamXPRequired");
     }
 
     public IEnumerator LoadProfileData(string data)
     {
-        LethalPlugin.Log.LogInfo($"Received player data from host -> {data}");
+        LethalPlugin.Log.LogDebug($"Received player data from host -> {data}");
 
         yield return new WaitUntil(() => Initialized == true);
 
@@ -232,21 +231,11 @@ internal class LC_XP : NetworkBehaviour
             LethalPlugin.Log.LogDebug($"skillCheck -> {skillCheck}");
         }
 
-        // Sanity check: If skillCheck goes over amount of skill points, reset all skills.
-        //if (skillCheck > skillPoints)
-        //{
-        //    LethalPlugin.Log.LogInfo("Skill check is greater than skill points, resetting skills.");
-        //    foreach (KeyValuePair<UpgradeType, Skill> skill in skillList.skills)
-        //    {
-        //        skill.Value.Reset();
-        //    }
-        //}
-
         // if the skill check is less than the current level plus five, add the difference
-        if ((skillCheck + skillPoints) < teamLevel.Value + 5)
+        if ((skillCheck + skillPoints) < teamLevel.Value + GetDefaultStartingSkillPoints())
         {
-            LethalPlugin.Log.LogInfo($"Skill check is less than current level, adding {teamLevel.Value + 5 - (skillCheck + skillPoints)} skill points.");
-            skillPoints += teamLevel.Value + 5 - (skillCheck + skillPoints);
+            LethalPlugin.Log.LogDebug($"Skill check is less than current level, adding {teamLevel.Value + GetDefaultStartingSkillPoints() - (skillCheck + skillPoints)} skill points.");
+            skillPoints += teamLevel.Value + GetDefaultStartingSkillPoints() - (skillCheck + skillPoints);
         }
 
         LethalPlugin.SkillsGUI.UpdateAllStats();
@@ -278,6 +267,11 @@ internal class LC_XP : NetworkBehaviour
         return req;
     }
 
+    public int GetDefaultStartingSkillPoints() {
+        IGeneralConfig generalConfig = LessShitConfigSystem.GetActive<IGeneralConfig>();
+
+        return generalConfig.startSkillPoints;
+    }
     public int GetXP()
     {
         return teamXP.Value;
@@ -471,7 +465,7 @@ internal class LC_XP : NetworkBehaviour
 
             teamLootLevel.OnValueChanged += LethalPlugin.SkillsGUI.TeamLootHudUpdate;
 
-            skillPoints = teamLevel.Value + 5;
+            skillPoints = teamLevel.Value + GetDefaultStartingSkillPoints();
 
             calculateAllPlayersHandSlotsClientEvent.InvokeServer();
 
@@ -491,7 +485,7 @@ internal class LC_XP : NetworkBehaviour
 
     public void LoadProfileData_S2CMessage(string saveData)
     {
-        LethalPlugin.Log.LogInfo($"Received LoadProfileData_S2CMessage -> {saveData}");
+        LethalPlugin.Log.LogDebug($"Received LoadProfileData_S2CMessage -> {saveData}");
 
         if (saveData == null)
         {
@@ -505,7 +499,7 @@ internal class LC_XP : NetworkBehaviour
     {
         SaveProfileData profileData = JsonConvert.DeserializeObject<SaveProfileData>(data);
 
-        LethalPlugin.Log.LogInfo($"Received SaveData request for {profileData.steamId} with data -> {JsonConvert.SerializeObject(profileData.saveData)}");
+        LethalPlugin.Log.LogDebug($"Received SaveData request for {profileData.steamId} with data -> {JsonConvert.SerializeObject(profileData.saveData)}");
 
         SaveManager.Save(profileData.steamId, profileData.saveData);
         SaveManager.SaveShared(teamXP.Value, teamLevel.Value, teamTotalValue.Value);

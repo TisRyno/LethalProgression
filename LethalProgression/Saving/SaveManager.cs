@@ -25,11 +25,11 @@ internal static class SaveManager
 
         foreach (KeyValuePair<UpgradeType, Skill> skill in LP_NetworkManager.xpInstance.skillList.skills)
         {
-            LethalPlugin.Log.LogInfo($"Skill is {skill.Key} and value is {skill.Value.GetLevel()}");
+            LethalPlugin.Log.LogDebug($"Skill is {skill.Key} and value is {skill.Value.GetLevel()}");
             saveData.skillAllocation.Add(skill.Key, skill.Value.GetLevel());
         }
         
-        LethalPlugin.Log.LogInfo($"Invoke saveProfileDataClientMessage({_steamId}, {JsonConvert.SerializeObject(saveData)})");
+        LethalPlugin.Log.LogDebug($"Invoke saveProfileDataClientMessage({_steamId}, {JsonConvert.SerializeObject(saveData)})");
 
         LP_NetworkManager.xpInstance.saveProfileDataClientMessage.SendServer(JsonConvert.SerializeObject(new SaveProfileData(_steamId, saveData)));
     }
@@ -38,7 +38,7 @@ internal static class SaveManager
     {
         saveFileSlot = GameNetworkManager.Instance.saveFileNum;
 
-        LethalPlugin.Log.LogInfo($"Saving to slot {saveFileSlot + 1} in {GetSavePath()}");
+        LethalPlugin.Log.LogDebug($"Saving to slot {saveFileSlot + 1} in {GetSavePath()}");
 
         // If file doesn't exist, create it
         if (!Directory.Exists(GetSavePath()))
@@ -53,7 +53,7 @@ internal static class SaveManager
     {
         saveFileSlot = GameNetworkManager.Instance.saveFileNum;
 
-        LethalPlugin.Log.LogInfo("Saving to slot " + (saveFileSlot + 1));
+        LethalPlugin.Log.LogDebug("Saving to slot " + (saveFileSlot + 1));
 
         // If file doesn't exist, create it
         if (!Directory.Exists(GetSavePath()))
@@ -85,11 +85,11 @@ internal static class SaveManager
 
         if (!File.Exists(GetSavePath() + steamId + ".json"))
         {
-            LethalPlugin.Log.LogInfo($"Player file for {steamId} doesn't exist");
+            LethalPlugin.Log.LogDebug($"Player file for {steamId} doesn't exist");
             return null;
         }
 
-        LethalPlugin.Log.LogInfo($"Player file for {steamId} found");
+        LethalPlugin.Log.LogDebug($"Player file for {steamId} found");
 
         return File.ReadAllText(GetSavePath() + steamId + ".json");
     }
@@ -100,12 +100,12 @@ internal static class SaveManager
 
         if (!File.Exists(GetSavePath() + "shared.json"))
         {
-            LethalPlugin.Log.LogInfo("Shared file doesn't exist");
+            LethalPlugin.Log.LogDebug("Shared file doesn't exist");
             
             return null;
         }
 
-        LethalPlugin.Log.LogInfo("Shared file exists");
+        LethalPlugin.Log.LogDebug("Shared file exists");
 
         string json = File.ReadAllText(GetSavePath() + "shared.json");
 
