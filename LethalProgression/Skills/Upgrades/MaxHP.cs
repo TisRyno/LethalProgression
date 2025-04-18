@@ -15,14 +15,14 @@ internal class MaxHP
             
         Skill maxHpSkill = LP_NetworkManager.xpInstance.skillList.GetSkill(UpgradeType.MaxHealth);
 
-        return defaultValue * (int) Math.Round(1 + maxHpSkill.GetTrueValue());
+        if (maxHpSkill == null)
+            return defaultValue;
+
+        return (int) Math.Floor(defaultValue * (1 + (maxHpSkill.GetTrueValue() / 100f)));
     }
 
     public static List<CodeInstruction> UncapMaxHealth(List<CodeInstruction> codes)
     {
-        if (!LP_NetworkManager.xpInstance || !LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.HPRegen))
-            return codes;
-
         MethodInfo mathFClamp = typeof(Mathf).GetMethod("Clamp", new Type[] { typeof(int), typeof(int), typeof(int) });
         
         for (int index = 0; index < codes.Count; index++)

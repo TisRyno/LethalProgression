@@ -103,16 +103,26 @@ internal class PlayerControllerBPatch
     private static void HPRegenUpdate(PlayerControllerB __instance)
     {
         int maxHealth = 100;
-
-        if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.HPRegen))
-            return;
-
+        
         if (LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.MaxHealth))
         {
             Skill maxHpSkill = LP_NetworkManager.xpInstance.skillList.GetSkill(UpgradeType.MaxHealth);
 
-            maxHealth *= (int) Math.Round(1 + maxHpSkill.GetTrueValue());
+            maxHealth = (int) Math.Floor(maxHealth * (1 + (maxHpSkill.GetTrueValue() / 100f)));
         }
+
+        if (__instance.health > maxHealth)
+        {
+            __instance.health = maxHealth;
+
+            if (!__instance.IsOwner || (__instance.IsServer && !__instance.isHostPlayerObject))
+                return;
+
+            HUDManager.Instance.UpdateHealthUI(__instance.health, false);
+        }
+
+        if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.HPRegen))
+            return;
 
         if (__instance.healthRegenerateTimer > 0f)
         {
