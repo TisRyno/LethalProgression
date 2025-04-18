@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.2.0](https://github.com/TisRyno/LethalProgression/compare/v2.1.0...v2.2.0) (2025-04-18)
+
+
+### Features
+
+* max hp skill ([99a7dfc](https://github.com/TisRyno/LethalProgression/commit/99a7dfc6bb6104c11495836f2ebe730125ba6736))
+* max hp skill ([94f6546](https://github.com/TisRyno/LethalProgression/commit/94f6546479362df7147a0093454d0656c3f23f1d))
+
+
+### Bug Fixes
+
+* loot value applies with BrutalCompanyMinus ([069613d](https://github.com/TisRyno/LethalProgression/commit/069613de1ce3a8a49c06e0ef53deb0520f6b5b6e))
+* starting skill points works from new save ([c6ba381](https://github.com/TisRyno/LethalProgression/commit/c6ba381f5fe9a5187faca2527e7a9bc34a79c4b4))
+
 ## [2.1.0](https://github.com/TisRyno/LethalProgression/compare/v2.0.0...v2.1.0) (2025-04-16)
 
 
