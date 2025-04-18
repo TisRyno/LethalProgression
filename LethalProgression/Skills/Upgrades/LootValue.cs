@@ -12,8 +12,11 @@ internal class LootValue
         float mult = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].GetMultiplier();
         float value = LP_NetworkManager.xpInstance.teamLootLevel.Value * mult;
         float valueMultiplier = 1 + (value / 100f);
+        int newValue = (int) Math.Round(defaultScrapValue * valueMultiplier);
 
-        return (int) Math.Round(defaultScrapValue * valueMultiplier);
+        LethalPlugin.Log.LogDebug($"Current scrap value {defaultScrapValue} multiplied by {valueMultiplier} to {newValue}");
+
+        return newValue;
     }
 
     public static void LootValueUpdate(int change)
