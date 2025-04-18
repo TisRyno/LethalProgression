@@ -12,11 +12,11 @@ interface IMaxHealthConfig
 
     [ConfigName("Max Health Max Level")]
     [ConfigDescription("Maximum level for the maximum health skill.")]
-    [ConfigDefault(40)]
+    [ConfigDefault(50)]
     int maxLevel { get; }
 
     [ConfigName("Max Health Multiplier")]
     [ConfigDescription("How much does max health skill increase per level?")]
-    [ConfigDefault(0.05f)]
+    [ConfigDefault(2f)]
     float multiplier { get; }
 }
