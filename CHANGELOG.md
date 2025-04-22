@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.1](https://github.com/TisRyno/LethalProgression/compare/v2.2.0...v2.2.1) (2025-04-22)
+
+
+### Bug Fixes
+
+* **#47:** hpregen spamming logs ([099439a](https://github.com/TisRyno/LethalProgression/commit/099439ae987ba48e0644154e4fb233c9beeab81a))
+* max hp applies on revival ([48e10d7](https://github.com/TisRyno/LethalProgression/commit/48e10d74d89023fa4e1d968b774c3809f7e6aef9))
+
 ## [2.2.0](https://github.com/TisRyno/LethalProgression/compare/v2.1.0...v2.2.0) (2025-04-18)
 
 
