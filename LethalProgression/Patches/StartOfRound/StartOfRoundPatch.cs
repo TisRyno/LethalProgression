@@ -1,9 +1,10 @@
-using System.Collections.Generic;
+using GameNetcodeStuff;
 using HarmonyLib;
 using LethalProgression.Config;
 using LethalProgression.LessShitConfig;
 using LethalProgression.Saving;
 using LethalProgression.Skills;
+using LethalProgression.Skills.Upgrades;
 
 namespace LethalProgression.Patches;
     
@@ -12,7 +13,7 @@ internal class StartOfRoundPatch
 {
     [HarmonyPostfix]
     [HarmonyPatch(typeof(StartOfRound), "FirePlayersAfterDeadlineClientRpc")]
-    private static void ResetXPValues(StartOfRound __instance)
+    private static void ResetXPValues()
     {
         IGeneralConfig generalConfig = LessShitConfigSystem.GetActive<IGeneralConfig>();
 
@@ -36,5 +37,17 @@ internal class StartOfRoundPatch
         xpInstance.teamLevel.Value = 0;
 
         xpInstance.teamLootLevel.Value = 0;
+    }
+    
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(StartOfRound), "ReviveDeadPlayers")]
+    static void ReviveDeadPlayersPostfix()
+    {
+        PlayerControllerB playerControllerB = GameNetworkManager.Instance.localPlayerController;
+
+        int startingHP =  MaxHP.GetNewMaxHealth(100);
+
+        playerControllerB.health = startingHP;
+        HUDManager.Instance.UpdateHealthUI(startingHP, false);
     }
 }
