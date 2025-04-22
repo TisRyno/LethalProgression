@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using LethalProgression.Skills.Upgrades;
 using LethalProgression.Skills;
 using UnityEngine;
-using System;
 
 namespace LethalProgression.Patches;
 
@@ -102,21 +101,23 @@ internal class PlayerControllerBPatch
     [HarmonyPatch(typeof(PlayerControllerB), "LateUpdate")]
     private static void HPRegenUpdate(PlayerControllerB __instance)
     {
-        int maxHealth = 100;
-        
-        if (LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.MaxHealth))
-        {
-            Skill maxHpSkill = LP_NetworkManager.xpInstance.skillList.GetSkill(UpgradeType.MaxHealth);
+        if (!__instance.IsOwner)
+            return;
 
-            maxHealth = (int) Math.Floor(maxHealth * (1 + (maxHpSkill.GetTrueValue() / 100f)));
-        }
+        if (__instance.IsServer && !__instance.isHostPlayerObject) 
+            return;
 
+        // Ignore if they are dead or not player controlled
+        if (!__instance.isPlayerControlled || __instance.isPlayerDead)
+            return;
+
+        // Get max health based off of MaxHP Skill
+        int maxHealth = MaxHP.GetNewMaxHealth(100);
+
+        // If their current health exceeds their max health reset it
         if (__instance.health > maxHealth)
         {
             __instance.health = maxHealth;
-
-            if (!__instance.IsOwner || (__instance.IsServer && !__instance.isHostPlayerObject))
-                return;
 
             HUDManager.Instance.UpdateHealthUI(__instance.health, false);
         }
@@ -133,16 +134,13 @@ internal class PlayerControllerBPatch
         if (__instance.health >= 20)
             __instance.MakeCriticallyInjured(false);
 
-        if (!__instance.isPlayerControlled || __instance.health >= maxHealth || __instance.isPlayerDead)
+        if (__instance.health >= maxHealth)
             return;
         
         Skill skill = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.HPRegen];
         // Then turn that into seconds. So, if hps is 0.5, then it will take 2 seconds to regen 1 health.
         __instance.healthRegenerateTimer = 1f / skill.GetTrueValue(); // 0.05 * 5 = 0.25
         __instance.health++;
-
-        if (!__instance.IsOwner || (__instance.IsServer && !__instance.isHostPlayerObject))
-            return;
 
         HUDManager.Instance.UpdateHealthUI(__instance.health, false);
     }
