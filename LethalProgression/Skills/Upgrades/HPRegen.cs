@@ -13,11 +13,11 @@ internal class HPRegen
         if (!LP_NetworkManager.xpInstance || !LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.HPRegen))
             return codes;
 
-        FieldInfo health = typeof(PlayerControllerB).GetField(nameof(PlayerControllerB.health));
+        FieldInfo healthField = typeof(PlayerControllerB).GetField(nameof(PlayerControllerB.health));
         
         for (int index = 0; index < codes.Count; index++)
         {
-            if (codes[index].opcode != OpCodes.Ldfld || (FieldInfo)codes[index].operand != health)
+            if (codes[index].opcode != OpCodes.Ldfld || (FieldInfo)codes[index].operand != healthField)
                 continue;
             
             if (codes[index + 1].opcode != OpCodes.Ldc_I4 || (int) codes[index + 1].operand != 20)

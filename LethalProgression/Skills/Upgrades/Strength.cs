@@ -9,12 +9,9 @@ namespace LethalProgression.Skills.Upgrades;
 [HarmonyPatch]
 internal class Strength
 {
-    public static void StrengthUpdate(int change = 0)
+    public static void StrengthUpdate(int _change = 0)
     {
         if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.Strength))
-            return;
-
-        if (LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Strength].GetLevel() == 0)
             return;
 
         PlayerControllerB player = GameNetworkManager.Instance.localPlayerController;
