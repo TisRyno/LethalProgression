@@ -20,7 +20,7 @@ internal class LethalPlugin : BaseUnityPlugin
 {
     private const string modGUID = "TisRyno.LethalProgression";
     private const string modName = "Lethal Progression";
-    private const string modVersion = "2.2.0";
+    private const string modVersion = "2.2.1";
     public static AssetBundle skillBundle;
 
     internal static ManualLogSource Log;
