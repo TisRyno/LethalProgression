@@ -42,7 +42,7 @@ internal class HUDManagerPatch
         int realScrapCost = scrapCost;
 
         if (lootConfig.isEnabled) {
-            float mult = LP_NetworkManager.xpInstance.skillList.skills[Skills.UpgradeType.Value].Multiplier;
+            float mult = LP_NetworkManager.xpInstance.skillList.skills[Skills.UpgradeType.Value].GetMultiplier();
         float value = LP_NetworkManager.xpInstance.teamLootLevel.Value * mult;
         float valueMultiplier = 1 + (value / 100f);
 
