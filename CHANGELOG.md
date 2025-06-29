@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.2.2](https://github.com/TisRyno/LethalProgression/compare/v2.2.1...v2.2.2) (2025-06-29)
+
+
+### Bug Fixes
+
+* allow disabling enemy xp gain due to infinite xp issues ([6f95aff](https://github.com/TisRyno/LethalProgression/commit/6f95aff4ea5f624d020a5f9a025f192c45e933d6))
+* hud was breaking when loot value skill disabled ([04f6205](https://github.com/TisRyno/LethalProgression/commit/04f6205e0e8f2ef8d4533f3e736f98106c7b8232))
+* use correct getter ([f8c3978](https://github.com/TisRyno/LethalProgression/commit/f8c3978c254ada84c3528ce786809193598885a7))
+
 ## [2.2.1](https://github.com/TisRyno/LethalProgression/compare/v2.2.0...v2.2.1) (2025-04-22)
 
 
