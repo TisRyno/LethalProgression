@@ -1,4 +1,6 @@
 ﻿using HarmonyLib;
+using LethalProgression.Config;
+using LethalProgression.LessShitConfig;
 using System;
 using System.Collections;
 using TMPro;
@@ -35,11 +37,17 @@ internal class HUDManagerPatch
         // Now we got the loot list that's about to be displayed, we add XP for each one that gets shown.
         int scrapCost = GObject.scrapValue;
 
-        float mult = LP_NetworkManager.xpInstance.skillList.skills[Skills.UpgradeType.Value].GetMultiplier();
+        ILootValueConfig lootConfig = LessShitConfigSystem.GetActive<ILootValueConfig>();
+
+        int realScrapCost = scrapCost;
+
+        if (lootConfig.isEnabled) {
+            float mult = LP_NetworkManager.xpInstance.skillList.skills[Skills.UpgradeType.Value].Multiplier;
         float value = LP_NetworkManager.xpInstance.teamLootLevel.Value * mult;
         float valueMultiplier = 1 + (value / 100f);
 
-        int realScrapCost = (int) Math.Floor(scrapCost / valueMultiplier);
+            realScrapCost = (int) Math.Floor(scrapCost / valueMultiplier);
+        }
 
         // Give XP for the amount of money this scrap costs.
         LP_NetworkManager.xpInstance.updateTeamXPClientMessage.SendServer(realScrapCost);
