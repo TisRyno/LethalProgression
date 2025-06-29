@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using HarmonyLib;
+using LethalProgression.Config;
+using LethalProgression.LessShitConfig;
 
 namespace LethalProgression.Patches;
 
@@ -24,6 +26,11 @@ internal class EnemyAIPatch
     {
         // Only trigger on host
         if (!GameNetworkManager.Instance.isHostingGame)
+            return;
+
+        IGeneralConfig generalConfig = LessShitConfigSystem.GetActive<IGeneralConfig>();
+
+        if (generalConfig.disableEnemyXPGain)
             return;
 
         string enemyType = __instance.enemyType.ToString();

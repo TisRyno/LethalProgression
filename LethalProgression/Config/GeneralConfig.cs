@@ -45,6 +45,11 @@ interface IGeneralConfig
     [ConfigDefault(false)]
     bool disableUnspec { get; }
 
+    [ConfigName("Disable XP from Enemies")]
+    [ConfigDescription("Disables the ability to gain XP on entity death.")]
+    [ConfigDefault(false)]
+    bool disableEnemyXPGain { get; }
+
     [ConfigName("Keep progress")]
     [ConfigDescription("Keep your progress after being fired")]
     [ConfigDefault(false)]
