@@ -1,6 +1,7 @@
 using GameNetcodeStuff;
 using HarmonyLib;
 using LethalProgression.Config;
+using LethalProgression.GUI.Skills;
 using LethalProgression.LessShitConfig;
 using LethalProgression.Saving;
 using LethalProgression.Skills;
@@ -21,14 +22,18 @@ internal class StartOfRoundPatch
             return;
         
         var xpInstance = LP_NetworkManager.xpInstance;
-        int saveFileNum = GameNetworkManager.Instance.saveFileNum + 1;
-        SaveManager.DeleteSave(saveFileNum);
+
+        ES3SaveManager.DeleteSave();
 
         xpInstance.teamXPRequired.Value = xpInstance.CalculateXPRequirement();
         foreach (Skill skill in xpInstance.skillList.skills.Values)
         {
-            skill.SetLevel(0);
+            skill.SetLevel(0, false);
         }
+
+        LethalPlugin.SkillsGUI.UpdateAllStats();
+
+        ES3SaveManager.TriggerHostProfileSave();
 
         xpInstance.SetSkillPoints(xpInstance.GetDefaultStartingSkillPoints());
 
@@ -37,6 +42,7 @@ internal class StartOfRoundPatch
         xpInstance.teamLevel.Value = 0;
 
         xpInstance.teamLootLevel.Value = 0;
+        xpInstance.teamShipDoorBatteryLevel.Value = 0;
     }
     
     [HarmonyPostfix]

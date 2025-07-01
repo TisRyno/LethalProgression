@@ -96,6 +96,11 @@ namespace LethalProgression.LessShitConfig
             foreach (var entry in entries.Values)
             {
                 var section = entry.Definition.Section;
+
+                // Players should be able to keep their own UI choices
+                if (section == "UI")
+                    continue;
+                
                 var key = entry.Definition.Key;
                 if (!entryDict.ContainsKey(section))
                 {

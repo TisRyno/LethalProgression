@@ -24,7 +24,7 @@
         <!-- Version of the game supported by the plugin -->
         <!-- The value must be the same than the one in CI/CD -->
         <!-- https://www.nuget.org/packages/LethalCompany.GameLibs.Steam -->
-        <GameVersion>69.0.1-ngd.0</GameVersion>
+        <GameVersion>70.0.0-ngd.0</GameVersion>
 
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
@@ -81,6 +81,7 @@
     <ItemGroup Condition="$(CI) != 'true'">
         <!-- List of game assembly to include as reference -->
         <DllNames Include="Assembly-CSharp" Publicize="true" />
+        <DllNames Include="Assembly-CSharp-firstpass" />
         <DllNames Include="Facepunch.Steamworks.Win64" />
         <DllNames Include="Newtonsoft.Json" />
         <DllNames Include="Unity.TextMeshPro" />
@@ -114,28 +115,17 @@
         <Reference Include="@(DllNames)" HintPath="$(BepInExCoreDir)%(Identity).dll" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Compile Update="Properties\Resources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>Resources.resx</DependentUpon>
-      </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Update="Properties\Resources.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-    </ItemGroup>
-
     <!-- On CI build, the assemblies are downloaded from NuGet -->
     <ItemGroup Condition="$(CI) == 'true'">
         <PackageReference Include="LethalCompany.GameLibs.Steam" Version="$(GameVersion)" PrivateAssets="all" />
     </ItemGroup>
 
+    <Target Condition="$(CI) != 'true'" Name="Resource" AfterTargets="PostBuildEvent">
+        <Copy SourceFiles="$(SolutionDir)skillmenu" DestinationFiles="$(OutputPath)skillmenu" />
+    </Target>
+
      <!-- Move the plugin to the game's plugin directory and start the game to test it -->
-    <Target Condition="'$(CI)' != 'true' And $(StartGame)" Name="StartGame" AfterTargets="PostBuildEvent">
+    <Target Condition="$(CI) != 'true' And $(StartGame)" Name="StartGame" AfterTargets="PostBuildEvent">
         <!-- Create a temporary copy of the plugin in the target directory -->
         <!-- This is a workaround because if we copy it directly to the game's plugin directory, an error is thrown because the game is using the plugin -->
         <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFiles="$(TargetDir)$(TargetFileName).tmp" />

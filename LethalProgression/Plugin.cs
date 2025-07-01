@@ -10,7 +10,9 @@ using LethalProgression.GUI.XPBar;
 using LethalProgression.GUI.Skills;
 using LethalProgression.GUI.HandSlot;
 using LethalProgression.LessShitConfig;
-using System;
+using LethalProgression.Saving;
+using System.IO;
+using System.Reflection;
 
 namespace LethalProgression;
 
@@ -44,7 +46,13 @@ internal class LethalPlugin : BaseUnityPlugin
         var harmony = new Harmony(modGUID);
         harmony.PatchAll();
 
-        skillBundle = AssetBundle.LoadFromMemory(Properties.Resources.skillmenu);
+        string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        skillBundle = AssetBundle.LoadFromFile(Path.Combine(sAssemblyLocation, "skillmenu"));
+        if (skillBundle == null) {
+            Log.LogFatal("Failed to load custom assets."); // ManualLogSource for your plugin
+            return;
+        }
 
         Log = Logger;
 
@@ -60,6 +68,8 @@ internal class LethalPlugin : BaseUnityPlugin
         LessShitConfigSystem.RegisterSection<ISprintSpeedConfig>();
         LessShitConfigSystem.RegisterSection<IStaminaConfig>();
         LessShitConfigSystem.RegisterSection<IStrengthConfig>();
+        LessShitConfigSystem.RegisterSection<IShipHangarDoorConfig>();
+        LessShitConfigSystem.RegisterSection<IUIConfig>();
         
         LessShitConfigSystem.Bake(Config);
 
@@ -90,6 +100,8 @@ internal class LethalPlugin : BaseUnityPlugin
                 }
             }
         }
+
+        SaveDataMigration.MigrateOldSaves();
     }
 
     public IDictionary<string, object> GetAllConfigEntries()

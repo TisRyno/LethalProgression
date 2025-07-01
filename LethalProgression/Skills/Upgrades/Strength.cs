@@ -3,12 +3,46 @@ using System.Collections.Generic;
 using System.Linq;
 using GameNetcodeStuff;
 using HarmonyLib;
+using LethalProgression.Config;
+using LethalProgression.LessShitConfig;
 
 namespace LethalProgression.Skills.Upgrades;
 
 [HarmonyPatch]
-internal class Strength
+internal class Strength : Skill
 {
+    public override string ShortName => "STR";
+
+    public override string Name => "Strength";
+
+    public override string Attribute => "Strength";
+
+    public override string Description => "More work at the Company's gym gives you pure muscles! You can carry better. (Reduces weight by a percentage.)";
+
+    public override UpgradeType UpgradeType => UpgradeType.Strength;
+
+    public override int Cost => 1;
+
+    public override int MaxLevel {
+        get {
+            IStrengthConfig config = LessShitConfigSystem.GetActive<IStrengthConfig>();
+
+            return config.maxLevel;
+        }
+    }
+
+    public override float Multiplier {
+        get {
+            IStrengthConfig config = LessShitConfigSystem.GetActive<IStrengthConfig>();
+
+            return config.multiplier;
+        }
+    }
+    
+    public override bool IsTeamShared => false;
+
+    public Strength(): base(StrengthUpdate) {}
+
     public static void StrengthUpdate(int _change = 0)
     {
         if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.Strength))

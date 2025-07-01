@@ -14,4 +14,16 @@ internal struct SaveData
         this.steamId = steamId;
         this.skillPoints = skillPoints;
     }
+
+    public override readonly string ToString()
+    {
+        string collatedSkills = "";
+
+        foreach (UpgradeType type in skillAllocation.Keys)
+        {
+            collatedSkills += $" | {type}: {skillAllocation[type]}";
+        }
+
+        return $"skillPoints: {skillPoints} | Stats {collatedSkills}";
+    }
 }

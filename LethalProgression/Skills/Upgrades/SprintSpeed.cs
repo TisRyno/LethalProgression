@@ -1,11 +1,43 @@
 ﻿using System.Collections.Generic;
 using System.Reflection.Emit;
 using HarmonyLib;
+using LethalProgression.Config;
+using LethalProgression.LessShitConfig;
 
 namespace LethalProgression.Skills.Upgrades;
 
-public static class SprintSpeed
-{   
+internal class SprintSpeed : Skill
+{
+    public override string ShortName => "SPD";
+
+    public override string Name => "Sprint Speed";
+
+    public override string Attribute => "Sprint Speed";
+
+    public override string Description => "The company empowers you with pure steroids, run, spaceman.";
+
+    public override UpgradeType UpgradeType => UpgradeType.SprintSpeed;
+
+    public override int Cost => 1;
+
+    public override int MaxLevel {
+        get {
+            ISprintSpeedConfig config = LessShitConfigSystem.GetActive<ISprintSpeedConfig>();
+
+            return config.maxLevel;
+        }
+    }
+
+    public override float Multiplier {
+        get {
+            ISprintSpeedConfig config = LessShitConfigSystem.GetActive<ISprintSpeedConfig>();
+
+            return config.multiplier;
+        }
+    }
+    
+    public override bool IsTeamShared => false;
+
     public static float GetSprintSpeed(float defaultSprintSpeed)
     {
         if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.SprintSpeed))
