@@ -17,6 +17,7 @@ internal class HUDManagerPatch
     private static TextMeshProUGUI _tempText;
     private static float _tempBarTime;
 
+    private static GameObject levelUpAsset;
     private static GameObject levelText;
     private static float levelTextTime;
 
@@ -43,8 +44,8 @@ internal class HUDManagerPatch
 
         if (lootConfig.isEnabled) {
             float mult = LP_NetworkManager.xpInstance.skillList.skills[Skills.UpgradeType.Value].Multiplier;
-        float value = LP_NetworkManager.xpInstance.teamLootLevel.Value * mult;
-        float valueMultiplier = 1 + (value / 100f);
+            float value = LP_NetworkManager.xpInstance.teamLootLevel.Value * mult;
+            float valueMultiplier = 1 + (value / 100f);
 
             realScrapCost = (int) Math.Floor(scrapCost / valueMultiplier);
         }
@@ -86,6 +87,11 @@ internal class HUDManagerPatch
 
     public static void ShowLevelUp()
     {
+        IUIConfig uiConfig = LessShitConfigSystem.GetActive<IUIConfig>();
+
+        if (!uiConfig.levelUpEnabled)
+            return;
+
         if (!levelText)
             MakeLevelUp();
 
@@ -97,7 +103,22 @@ internal class HUDManagerPatch
 
     public static void MakeLevelUp()
     {
-        levelText = GameObject.Instantiate(LethalPlugin.skillBundle.LoadAsset<GameObject>("LevelUp"));
+        levelUpAsset = GameObject.Instantiate(LethalPlugin.skillBundle.LoadAsset<GameObject>("LevelUp"));
+
+        IUIConfig uiConfig = LessShitConfigSystem.GetActive<IUIConfig>();
+
+        int position = uiConfig.levelUpPosition;
+
+        if (position < 0 || position > 1)
+        {
+            LethalPlugin.Log.LogWarning($"[Invalid Config] Level Up Position value given {uiConfig.levelUpPosition} out of range (0-1)");
+            position = 1;
+        }
+
+        levelText = levelUpAsset.transform.GetChild(position).gameObject;
+
+        levelText.transform.GetChild(0).localScale = new Vector3(uiConfig.levelUpScale, uiConfig.levelUpScale, 1);
+        levelText.transform.GetChild(1).localScale = new Vector3(uiConfig.levelUpScale, uiConfig.levelUpScale, 1);
 
         levelText.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Level Up! Spend your skill points.";
 

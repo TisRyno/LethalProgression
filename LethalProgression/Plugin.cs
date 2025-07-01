@@ -46,7 +46,13 @@ internal class LethalPlugin : BaseUnityPlugin
         var harmony = new Harmony(modGUID);
         harmony.PatchAll();
 
-        skillBundle = AssetBundle.LoadFromMemory(Properties.Resources.skillmenu);
+        string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        skillBundle = AssetBundle.LoadFromFile(Path.Combine(sAssemblyLocation, "skillmenu"));
+        if (skillBundle == null) {
+            Log.LogFatal("Failed to load custom assets."); // ManualLogSource for your plugin
+            return;
+        }
 
         Log = Logger;
 

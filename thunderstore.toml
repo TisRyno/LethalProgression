@@ -29,6 +29,10 @@ target = "LethalProgression.dll"
 source = "CHANGELOG.md"
 target = "CHANGELOG.md"
 
+[[build.copy]]
+source = "skillmenu"
+target = "skillmenu"
+
 [publish]
 communities = ["lethal-company"]
 

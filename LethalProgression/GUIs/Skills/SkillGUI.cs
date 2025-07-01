@@ -86,12 +86,12 @@ internal class SkillsGUI
 
         foreach (KeyValuePair<UpgradeType, Skill> skill in LP_NetworkManager.xpInstance.skillList.skills)
         {
-            LethalPlugin.Log.LogInfo("Creating button for " + skill.Value.GetShortName());
+            LethalPlugin.Log.LogDebug("Creating button for " + skill.Value.ShortName);
             GameObject skillButton = SetupUpgradeButton(skill.Value);
-            LethalPlugin.Log.LogInfo("Setup passed!");
+            LethalPlugin.Log.LogDebug("Setup passed!");
 
             skillButtonsList.Add(skillButton);
-            LethalPlugin.Log.LogInfo("Added to skill list..");
+            LethalPlugin.Log.LogDebug("Added to skill list..");
             LoadSkillData(skill.Value, skillButton);
         }
 
@@ -152,21 +152,24 @@ internal class SkillsGUI
             return null;
         }
 
-        button.name = skill.GetShortName();
+        button.name = skill.ShortName;
 
         GameObject skillScroller = mainPanel.transform.GetChild(3).gameObject;
-        GameObject skillContents = skillScroller.transform.GetChild(1).gameObject;
-        button.transform.SetParent(skillContents.transform, false);
+        RectTransform skillContents = (RectTransform) skillScroller.transform.GetChild(1).transform;
+        
+        skillContents.GetComponent<VerticalLayoutGroup>().spacing = 0f;
+
+        button.transform.SetParent(skillContents, false);
 
         GameObject displayLabel = button.transform.GetChild(0).gameObject;
-        displayLabel.GetComponent<TextMeshProUGUI>().SetText(skill.GetShortName());
+        displayLabel.GetComponent<TextMeshProUGUI>().SetText(skill.ShortName);
 
         GameObject bonusLabel = button.transform.GetChild(1).gameObject;
-        bonusLabel.GetComponent<TextMeshProUGUI>().SetText(skill.GetLevel().ToString());
+        bonusLabel.GetComponent<TextMeshProUGUI>().SetText(skill.CurrentLevel.ToString());
         GameObject attributeLabel = button.transform.GetChild(2).gameObject;
-        attributeLabel.GetComponent<TextMeshProUGUI>().SetText("(" + skill.GetLevel() + " " + skill.GetAttribute() + ")");
+        attributeLabel.GetComponent<TextMeshProUGUI>().SetText("(" + skill.CurrentLevel + " " + skill.Attribute + ")");
 
-        button.GetComponentInChildren<TextMeshProUGUI>().SetText(skill.GetShortName() + ":");
+        button.GetComponentInChildren<TextMeshProUGUI>().SetText(skill.ShortName + ":");
 
         button.SetActive(true);
 
@@ -179,15 +182,15 @@ internal class SkillsGUI
     {
         CreateAllObjectsIfRequired();
 
-        if (skill._teamShared)
+        if (skill.IsTeamShared)
             return;
         
         GameObject bonusLabel = skillButton.transform.GetChild(1).gameObject;
-        bonusLabel.GetComponent<TextMeshProUGUI>().SetText(skill.GetLevel().ToString());
+        bonusLabel.GetComponent<TextMeshProUGUI>().SetText(skill.CurrentLevel.ToString());
         GameObject attributeLabel = skillButton.transform.GetChild(2).gameObject;
-        attributeLabel.GetComponent<TextMeshProUGUI>().SetText($"(+{skill.GetLevel() * skill.GetMultiplier()}% {skill.GetAttribute()})");
+        attributeLabel.GetComponent<TextMeshProUGUI>().SetText($"(+{skill.CurrentLevel * skill.Multiplier}% {skill.Attribute})");
 
-        skillButton.GetComponentInChildren<TextMeshProUGUI>().SetText($"{skill.GetShortName()}:");
+        skillButton.GetComponentInChildren<TextMeshProUGUI>().SetText($"{skill.ShortName}:");
     }
 
     public void UpdateAllStats()
@@ -196,10 +199,10 @@ internal class SkillsGUI
 
         foreach (KeyValuePair<UpgradeType, Skill> skill in LP_NetworkManager.xpInstance.skillList.skills)
         {
-            if (skill.Value._teamShared)
+            if (skill.Value.IsTeamShared)
                 continue;
 
-            GameObject skillButton = skillButtonsList.Find(x => x.name == skill.Value.GetShortName());
+            GameObject skillButton = skillButtonsList.Find(x => x.name == skill.Value.ShortName);
             LoadSkillData(skill.Value, skillButton);
         }
     }
@@ -215,18 +218,18 @@ internal class SkillsGUI
         TextMeshProUGUI upgradeAmt = infoPanel.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI upgradeDesc = infoPanel.transform.GetChild(2).gameObject.GetComponent<TextMeshProUGUI>();
 
-        upgradeName.SetText(skill.GetName());
+        upgradeName.SetText(skill.Name);
 
-        if (skill.GetMaxLevel() == 99999)
+        if (skill.MaxLevel == 99999)
         {
-            upgradeAmt.SetText($"{skill.GetLevel()}");
+            upgradeAmt.SetText($"{skill.CurrentLevel}");
         }
         else
         {
-            upgradeAmt.SetText($"{skill.GetLevel()} / {skill.GetMaxLevel()}");
+            upgradeAmt.SetText($"{skill.CurrentLevel} / {skill.MaxLevel}");
         }
 
-        upgradeDesc.SetText(skill.GetDescription());
+        upgradeDesc.SetText(skill.Description);
 
         // Make all the buttons do something:
         GameObject plusFive = infoPanel.transform.GetChild(3).gameObject;
@@ -261,8 +264,8 @@ internal class SkillsGUI
         CreateAllObjectsIfRequired();
 
         int currentSkillPoints = LP_NetworkManager.xpInstance.GetSkillPoints();
-        int currentLevel = skill.GetLevel();
-        int maxLevel = skill.GetMaxLevel();
+        int currentLevel = skill.CurrentLevel;
+        int maxLevel = skill.MaxLevel;
 
         if (delta > 0)
         {
@@ -282,7 +285,7 @@ internal class SkillsGUI
         if (delta < 0)
         {
             // Check skill isn't currently level 0
-            if (skill.GetLevel() == 0)
+            if (skill.CurrentLevel == 0)
                 return;
 
             // If we have less levels than delta, set to remaining levels
@@ -297,7 +300,7 @@ internal class SkillsGUI
         UpdateStatInfo(skill);
 
         foreach (var button in skillButtonsList)
-            if (button.name == skill.GetShortName())
+            if (button.name == skill.ShortName)
                 LoadSkillData(skill, button);
     }
 
