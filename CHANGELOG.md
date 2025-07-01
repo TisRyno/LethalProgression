@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.3.0](https://github.com/TisRyno/LethalProgression/compare/v2.2.2...v2.3.0) (2025-07-01)
+
+
+### Features
+
+* ship hangar door skill added ([0ab8c2a](https://github.com/TisRyno/LethalProgression/commit/0ab8c2a72436985979afc3a687ee01d0e2f58ff1))
+* support LCBetterSaves by switching saving strategy to ES3 ([1afc2cd](https://github.com/TisRyno/LethalProgression/commit/1afc2cd8f6d78fc48a71bfaa35bd700d4a2f771b))
+* UI config and new assetbundle method ([87aaa8d](https://github.com/TisRyno/LethalProgression/commit/87aaa8d760a9922b22044654169d42ada83e85b4))
+
 ## [2.2.2](https://github.com/TisRyno/LethalProgression/compare/v2.2.1...v2.2.2) (2025-06-29)
 
 
