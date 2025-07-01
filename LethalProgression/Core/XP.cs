@@ -39,6 +39,10 @@ internal class LC_XP : NetworkBehaviour
         Value = 0
     };
 
+    public LethalNetworkVariable<int> teamShipDoorBatteryLevel = new LethalNetworkVariable<int>("teamShipDoorBatteryLevel") {
+        Value = 0
+    };
+
     // New Player has Connected to Server Event
     public LethalClientEvent playerConnectClientEvent = new LethalClientEvent(identifier: "playerConnectEvent");
     public LethalServerEvent playerConnectServerEvent = new LethalServerEvent(identifier: "playerConnectEvent");
@@ -70,6 +74,10 @@ internal class LC_XP : NetworkBehaviour
     // Request Host to update Team Loot Level
     public LethalServerMessage<int> updateTeamLootLevelServerMessage = new LethalServerMessage<int>(identifier: "updateTeamLootLevelMessage");
     public LethalClientMessage<int> updateTeamLootLevelClientMessage = new LethalClientMessage<int>(identifier: "updateTeamLootLevelMessage");
+
+    // Request Host to update Team Ship Door Battery Level
+    public LethalServerMessage<int> updateTeamShipDoorBatteryLevelServerMessage = new LethalServerMessage<int>(identifier: "updateTeamShipDoorBatteryLevelMessage");
+    public LethalClientMessage<int> updateTeamShipDoorBatteryLevelClientMessage = new LethalClientMessage<int>(identifier: "updateTeamShipDoorBatteryLevelMessage");
 
     // Request Host to update Team XP
     public LethalServerMessage<int> updateTeamXPServerMessage = new LethalServerMessage<int>(identifier: "updateTeamXPMessage");
@@ -115,6 +123,7 @@ internal class LC_XP : NetworkBehaviour
         requestProfileDataServerMessage.OnReceived += RequestSavedData_C2SMessage;
         saveProfileDataServerMessage.OnReceived += SaveProfileData_C2SMessage;
         updateTeamLootLevelServerMessage.OnReceived += UpdateTeamLootLevel_C2SMessage;
+        updateTeamShipDoorBatteryLevelServerMessage.OnReceived += UpdateTeamShipDoorBatteryLevel_C2SMessage;
         updateTeamXPServerMessage.OnReceived += UpdateTeamXP_C2SMessage;
         updateSPHandSlotsServerMessage.OnReceived += UpdateSPHandSlots_C2SMessage;
 
@@ -125,7 +134,8 @@ internal class LC_XP : NetworkBehaviour
         // Network Variable handlers
         teamLevel.OnValueChanged -= OnTeamLevelChange;
         // teamXP.OnValueChanged -= OnTeamXPChange;
-        teamLootLevel.OnValueChanged -= LethalPlugin.SkillsGUI.TeamLootHudUpdate;
+        teamLootLevel.OnValueChanged -= LethalPlugin.SkillsGUI.TeamLootButtonUpdate;
+        teamShipDoorBatteryLevel.OnValueChanged -= LethalPlugin.SkillsGUI.TeamShipDoorButtonUpdate;
 
         // Network Events handlers
         playerConnectServerEvent.OnReceived -= PlayerConnect_C2SEvent;
@@ -142,6 +152,7 @@ internal class LC_XP : NetworkBehaviour
         requestProfileDataServerMessage.OnReceived -= RequestSavedData_C2SMessage;
         saveProfileDataServerMessage.OnReceived -= SaveProfileData_C2SMessage;
         updateTeamLootLevelServerMessage.OnReceived -= UpdateTeamLootLevel_C2SMessage;
+        updateTeamShipDoorBatteryLevelServerMessage.OnReceived -= UpdateTeamShipDoorBatteryLevel_C2SMessage;
         updateTeamXPServerMessage.OnReceived -= UpdateTeamXP_C2SMessage;
         updateSPHandSlotsServerMessage.OnReceived -= UpdateSPHandSlots_C2SMessage;
 
@@ -358,6 +369,22 @@ internal class LC_XP : NetworkBehaviour
     }
 
     /////////////////////////////////////////////////
+    /// Team Ship Door Battery Upgrade Sync
+    /////////////////////////////////////////////////
+    
+    public void UpdateTeamShipDoorBatteryLevel_C2SMessage(int change, ulong clientId) {
+        int currentBatteryLevel = teamShipDoorBatteryLevel.Value;
+
+        if (currentBatteryLevel + change <= 0) {
+            teamShipDoorBatteryLevel.Value = 0;
+        } else {
+            teamShipDoorBatteryLevel.Value += change;
+        }
+
+        LethalPlugin.Log.LogDebug($"[{clientId}] Requested {change} to Team Ship Door Battery Value, new value: {teamShipDoorBatteryLevel.Value}");
+    }
+
+    /////////////////////////////////////////////////
     /// Hand Slot Sync
     /////////////////////////////////////////////////
 
@@ -463,7 +490,8 @@ internal class LC_XP : NetworkBehaviour
                 LoadSharedData();
             }
 
-            teamLootLevel.OnValueChanged += LethalPlugin.SkillsGUI.TeamLootHudUpdate;
+            teamLootLevel.OnValueChanged += LethalPlugin.SkillsGUI.TeamLootButtonUpdate;
+            teamShipDoorBatteryLevel.OnValueChanged += LethalPlugin.SkillsGUI.TeamShipDoorButtonUpdate;
 
             skillPoints = teamLevel.Value + GetDefaultStartingSkillPoints();
 

@@ -2,11 +2,43 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
+using LethalProgression.Config;
+using LethalProgression.LessShitConfig;
 
 namespace LethalProgression.Skills.Upgrades;
 
-internal class BatteryLife
+internal class BatteryLife : Skill
 {
+    public override string ShortName => "BAT";
+
+    public override string Name => "Battery Life";
+
+    public override string Attribute => "Battery Life";
+
+    public override string Description => "The company provides you with better batteries found from exotic moons. Don't forget to recharge them AT THE SHIP'S CHARGER.";
+
+    public override UpgradeType UpgradeType => UpgradeType.Battery;
+
+    public override int Cost => 1;
+
+    public override int MaxLevel {
+        get {
+            IBatteryLifeConfig config = LessShitConfigSystem.GetActive<IBatteryLifeConfig>();
+
+            return config.maxLevel;
+        }
+    }
+
+    public override float Multiplier {
+        get {
+            IBatteryLifeConfig config = LessShitConfigSystem.GetActive<IBatteryLifeConfig>();
+
+            return config.multiplier;
+        }
+    }
+
+    public override bool IsTeamShared => false;
+
     public static float GetUseItemBatteryUsage(float defaultBatteryUsage)
     {
         if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.Battery))

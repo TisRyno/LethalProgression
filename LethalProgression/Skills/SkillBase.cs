@@ -3,104 +3,49 @@ using LethalProgression.Saving;
 
 namespace LethalProgression.Skills;
 
-internal class Skill
+internal abstract class Skill
 {
-    private readonly string _shortName;
-    private readonly string _name;
-    private readonly string _attribute;
-    private readonly string _description;
-    private readonly UpgradeType _upgradeType;
-    private readonly int _cost;
-    private readonly int _maxLevel;
-    private readonly float _multiplier;
-    private readonly Action<int> _callback;
-    public bool _teamShared;
-    private int _level;
-    public Skill(string name, string description, string shortname, string attribute,
-        UpgradeType upgradeType, int cost, int maxLevel, float multiplier,
-        Action<int> callback = null, bool teamShared = false)
+    protected readonly Action<int> _callback;
+    public int CurrentLevel { get; protected set; }
+    public abstract string ShortName { get; }
+    public abstract string Name { get; }
+    public abstract string Attribute { get; }
+    public abstract string Description { get; }
+    public abstract UpgradeType UpgradeType { get; }
+    public abstract int Cost { get; }
+    public abstract int MaxLevel { get; }
+    public abstract float Multiplier { get; }
+    public abstract bool IsTeamShared { get; }
+
+    public Skill(Action<int> callback = null)
     {
-        _name = name;
-        _shortName = shortname;
-        _attribute = attribute;
-        _description = description;
-        _upgradeType = upgradeType;
-        _cost = cost;
-        _maxLevel = maxLevel;
-        _multiplier = multiplier;
-        _level = 0;
+        CurrentLevel = 0;
         _callback = callback;
-        _teamShared = teamShared;
-    }
-
-    public string GetName()
-    {
-        return _name;
-    }
-
-    public string GetShortName()
-    {
-        return _shortName;
-    }
-
-    public string GetAttribute()
-    {
-        return _attribute;
-    }
-
-    public string GetDescription()
-    {
-        return _description;
-    }
-
-    public UpgradeType GetUpgradeType()
-    {
-        return _upgradeType;
-    }
-
-    public int GetCost()
-    {
-        return _cost;
-    }
-
-    public int GetMaxLevel()
-    {
-        return _maxLevel;
-    }
-
-    public int GetLevel()
-    {
-        return _level;
-    }
-
-    public float GetMultiplier()
-    {
-        return _multiplier;
     }
 
     public float GetTrueValue()
     {
-        return _multiplier * _level;
+        return Multiplier * CurrentLevel;
     }
 
     public void SetLevel(int newLevel, bool triggerHostProfileSave = true)
     {
-        int oldLevel = _level;
+        int oldLevel = CurrentLevel;
 
-        _level = newLevel;
+        CurrentLevel = newLevel;
         // level is number of changes
         _callback?.Invoke(newLevel - oldLevel);
 
         if (triggerHostProfileSave)
-            SaveManager.TriggerHostProfileSave();
+            ES3SaveManager.TriggerHostProfileSave();
     }
 
     public void AddLevel(int change)
     {
-        _level += change;
+        CurrentLevel += change;
 
         _callback?.Invoke(change);
 
-        SaveManager.TriggerHostProfileSave();
+        ES3SaveManager.TriggerHostProfileSave();
     }
 }

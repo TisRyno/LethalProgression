@@ -11,4 +11,5 @@ public enum UpgradeType
     SprintSpeed,
     Strength,
     MaxHealth,
+    ShipDoorBattery,
 }

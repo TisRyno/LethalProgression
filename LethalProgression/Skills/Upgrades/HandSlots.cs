@@ -4,11 +4,45 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 using UnityEngine.UI;
 using GameNetcodeStuff;
+using LethalProgression.Config;
+using LethalProgression.LessShitConfig;
 
 namespace LethalProgression.Skills.Upgrades;
 
-internal class HandSlots
+internal class HandSlots : Skill
 {
+    public override string ShortName => "HND";
+
+    public override string Name => "Hand Slot";
+
+    public override string Attribute => "Hand Slots";
+
+    public override string Description => "The company finally gives you a better belt! Fit more stuff! (One slot every 100%.)";
+
+    public override UpgradeType UpgradeType => UpgradeType.HandSlot;
+
+    public override int Cost => 1;
+
+    public override int MaxLevel {
+        get {
+            IHandSlotsConfig config = LessShitConfigSystem.GetActive<IHandSlotsConfig>();
+
+            return config.maxLevel;
+        }
+    }
+
+    public override float Multiplier {
+        get {
+            IHandSlotsConfig config = LessShitConfigSystem.GetActive<IHandSlotsConfig>();
+
+            return config.multiplier;
+        }
+    }
+
+    public override bool IsTeamShared => false;
+
+    public HandSlots(): base(HandSlotsUpdate) {}
+
     public static int currentSlotCount = 4;
     public static void HandSlotsUpdate(int updateValue)
     {

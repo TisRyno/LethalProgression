@@ -15,7 +15,7 @@ internal class GameNetworkManagerPatch
     {
         if (LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.Value))
         {
-            int localLootLevel = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].GetLevel();
+            int localLootLevel = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].CurrentLevel;
 
             LP_NetworkManager.xpInstance.updateTeamLootLevelClientMessage.SendServer(-localLootLevel);
         }

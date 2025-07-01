@@ -3,11 +3,43 @@ using System.Reflection;
 using System.Reflection.Emit;
 using GameNetcodeStuff;
 using HarmonyLib;
+using LethalProgression.Config;
+using LethalProgression.LessShitConfig;
 
 namespace LethalProgression.Skills.Upgrades;
 
-internal class Stamina
+internal class Stamina : Skill
 {
+    public override string ShortName => "STM";
+
+    public override string Name => "Stamina";
+
+    public override string Attribute => "Stamina";
+
+    public override string Description => "Hours on that company gym finally coming into play. Allows you to run for longer, but has to regenerate it slower.";
+
+    public override UpgradeType UpgradeType => UpgradeType.Stamina;
+
+    public override int Cost => 1;
+
+    public override int MaxLevel {
+        get {
+            IStaminaConfig config = LessShitConfigSystem.GetActive<IStaminaConfig>();
+
+            return config.maxLevel;
+        }
+    }
+
+    public override float Multiplier {
+        get {
+            IStaminaConfig config = LessShitConfigSystem.GetActive<IStaminaConfig>();
+
+            return config.multiplier;
+        }
+    }
+    
+    public override bool IsTeamShared => false;
+
     public static float GetJumpStaminaUsage(float defaultJumpStaminaUsage)
     {
         if (!LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.Stamina))

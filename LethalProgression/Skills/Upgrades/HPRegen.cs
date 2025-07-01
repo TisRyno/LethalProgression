@@ -3,11 +3,43 @@ using System.Reflection;
 using System.Reflection.Emit;
 using GameNetcodeStuff;
 using HarmonyLib;
+using LethalProgression.Config;
+using LethalProgression.LessShitConfig;
 
 namespace LethalProgression.Skills.Upgrades;
 
-internal class HPRegen
+internal class HPRegen : Skill
 {
+    public override string ShortName => "HPR";
+
+    public override string Name => "Health Regen";
+
+    public override string Attribute => "Health Regeneration";
+
+    public override string Description => "The company installs a basic healer into your suit, letting you regenerate health slowly. Only regenerate up to your max HP.";
+
+    public override UpgradeType UpgradeType => UpgradeType.HPRegen;
+
+    public override int Cost => 1;
+
+    public override int MaxLevel {
+        get {
+            IHealthRegenConfig config = LessShitConfigSystem.GetActive<IHealthRegenConfig>();
+
+            return config.maxLevel;
+        }
+    }
+
+    public override float Multiplier {
+        get {
+            IHealthRegenConfig config = LessShitConfigSystem.GetActive<IHealthRegenConfig>();
+
+            return config.multiplier;
+        }
+    }
+
+    public override bool IsTeamShared => false;
+
     public static List<CodeInstruction> DisableBaseGameHPRegen(List<CodeInstruction> codes)
     {
         if (!LP_NetworkManager.xpInstance || !LP_NetworkManager.xpInstance.skillList.IsSkillValid(UpgradeType.HPRegen))

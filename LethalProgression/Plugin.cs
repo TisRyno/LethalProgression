@@ -60,6 +60,8 @@ internal class LethalPlugin : BaseUnityPlugin
         LessShitConfigSystem.RegisterSection<ISprintSpeedConfig>();
         LessShitConfigSystem.RegisterSection<IStaminaConfig>();
         LessShitConfigSystem.RegisterSection<IStrengthConfig>();
+        LessShitConfigSystem.RegisterSection<IShipHangarDoorConfig>();
+        LessShitConfigSystem.RegisterSection<IUIConfig>();
         
         LessShitConfigSystem.Bake(Config);
 

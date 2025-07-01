@@ -95,7 +95,8 @@ internal class SkillsGUI
             LoadSkillData(skill.Value, skillButton);
         }
 
-        TeamLootHudUpdate(0);
+        TeamLootButtonUpdate(0);
+        TeamShipDoorButtonUpdate(0);
     }
 
     public void BackButton()
@@ -300,30 +301,38 @@ internal class SkillsGUI
                 LoadSkillData(skill, button);
     }
 
-    public void TeamLootHudUpdate(int newValue)
+    public void TeamLootButtonUpdate(int newValue)
+    {
+        SharedButtonUpdate(newValue, "VAL", LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value]);
+    }
+
+    public void TeamShipDoorButtonUpdate(int newValue)
+    {
+        SharedButtonUpdate(newValue, "DRB", LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.ShipDoorBattery]);
+    }
+
+    private void SharedButtonUpdate(int newValue, string name, Skill skill)
     {
         CreateAllObjectsIfRequired();
 
-        foreach (var button in skillButtonsList)
+        foreach (GameObject button in skillButtonsList)
         {
-            if (button.name != "VAL")
+            if (button.name != name)
                 continue;
-            
-            Skill skill = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value];
-            LoadSkillData(skill, button);
 
             GameObject displayLabel = button.transform.GetChild(0).gameObject;
-            displayLabel.GetComponent<TextMeshProUGUI>().SetText(skill.GetShortName());
+            displayLabel.GetComponent<TextMeshProUGUI>().SetText(skill.ShortName);
 
             GameObject bonusLabel = button.transform.GetChild(1).gameObject;
-            bonusLabel.GetComponent<TextMeshProUGUI>().SetText($"{skill.GetLevel()}");
-            button.GetComponentInChildren<TextMeshProUGUI>().SetText($"{skill.GetShortName()}:");
+            bonusLabel.GetComponent<TextMeshProUGUI>().SetText($"{skill.CurrentLevel}");
+            button.GetComponentInChildren<TextMeshProUGUI>().SetText($"{skill.ShortName}:");
 
-            float mult = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.Value].GetMultiplier();
+            float mult = skill.Multiplier;
             float value = newValue * mult;
 
             GameObject attributeLabel = button.transform.GetChild(2).gameObject;
-            attributeLabel.GetComponent<TextMeshProUGUI>().SetText($"(+{value}% {skill.GetAttribute()})");
+            attributeLabel.GetComponent<TextMeshProUGUI>().SetText($"(+{value}% {skill.Attribute})");
+
             LethalPlugin.Log.LogInfo($"Setting team value hud to {value}");
         }
     }

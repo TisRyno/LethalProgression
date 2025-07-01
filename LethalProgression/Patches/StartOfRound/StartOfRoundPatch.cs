@@ -37,6 +37,7 @@ internal class StartOfRoundPatch
         xpInstance.teamLevel.Value = 0;
 
         xpInstance.teamLootLevel.Value = 0;
+        xpInstance.teamShipDoorBatteryLevel.Value = 0;
     }
     
     [HarmonyPostfix]
