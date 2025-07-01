@@ -15,7 +15,7 @@ internal class ShipDoorBattery : Skill
 
     public override string Attribute => "Ship Door Battery";
 
-    public override string Description => "The company gives you a better pair of eyes, allowing you to see the value in things.";
+    public override string Description => "The company provides extended life batteries that keep the ship's doors shut for longer.";
 
     public override UpgradeType UpgradeType => UpgradeType.ShipDoorBattery;
 
