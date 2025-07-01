@@ -10,7 +10,9 @@ using LethalProgression.GUI.XPBar;
 using LethalProgression.GUI.Skills;
 using LethalProgression.GUI.HandSlot;
 using LethalProgression.LessShitConfig;
-using System;
+using LethalProgression.Saving;
+using System.IO;
+using System.Reflection;
 
 namespace LethalProgression;
 
@@ -92,6 +94,8 @@ internal class LethalPlugin : BaseUnityPlugin
                 }
             }
         }
+
+        SaveDataMigration.MigrateOldSaves();
     }
 
     public IDictionary<string, object> GetAllConfigEntries()

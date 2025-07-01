@@ -193,7 +193,7 @@ internal class LC_XP : NetworkBehaviour
 
     public void LoadSharedData()
     {
-        SaveSharedData? _sharedData = SaveManager.LoadSharedFile();
+        SaveSharedData? _sharedData = ES3SaveManager.LoadSharedFile();
 
         if (_sharedData is null)
         {
@@ -504,7 +504,7 @@ internal class LC_XP : NetworkBehaviour
     // Loading
     public void RequestSavedData_C2SMessage(ulong steamID, ulong clientId)
     {
-        string saveData = SaveManager.LoadPlayerFile(steamID);
+        string saveData = ES3SaveManager.LoadPlayerFile(steamID);
 
         PlayerControllerB player = clientId.GetPlayerController();
 
@@ -529,7 +529,7 @@ internal class LC_XP : NetworkBehaviour
 
         LethalPlugin.Log.LogDebug($"Received SaveData request for {profileData.steamId} with data -> {JsonConvert.SerializeObject(profileData.saveData)}");
 
-        SaveManager.Save(profileData.steamId, profileData.saveData);
-        SaveManager.SaveShared(teamXP.Value, teamLevel.Value, teamTotalValue.Value);
+        ES3SaveManager.Save(profileData.steamId, profileData.saveData);
+        ES3SaveManager.SaveShared(teamXP.Value, teamLevel.Value, teamTotalValue.Value);
     }
 }

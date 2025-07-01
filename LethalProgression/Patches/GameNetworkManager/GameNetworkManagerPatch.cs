@@ -33,6 +33,6 @@ internal class GameNetworkManagerPatch
     private static void SaveGamePrefix()
     {
         LethalPlugin.Log.LogDebug("Invoked DoSave via SaveGame");
-        SaveManager.TriggerHostProfileSave();
+        ES3SaveManager.TriggerHostProfileSave();
     }
 }
