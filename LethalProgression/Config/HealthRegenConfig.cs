@@ -16,7 +16,7 @@ interface IHealthRegenConfig
     int maxLevel { get; }
 
     [ConfigName("Health Regen Multiplier")]
-    [ConfigDescription("How much does the health regen skill increase per level?")]
-    [ConfigDefault(0.5f)]
+    [ConfigDescription("**Warning** - Making this multiplier too high will make you almost never lose HP. Multiplier x Max Level should equal 1 at most. (1hp every 1 second)")]
+    [ConfigDefault(0.05f)]
     float multiplier { get; }
 }
