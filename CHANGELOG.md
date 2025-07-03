@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/TisRyno/LethalProgression/compare/v2.3.0...v2.3.1) (2025-07-03)
+
+
+### Bug Fixes
+
+* config did not match the functionality ([c4e9739](https://github.com/TisRyno/LethalProgression/commit/c4e9739fdfec80dc996734b2f8daaf1fa728393e))
+
 ## [2.3.0](https://github.com/TisRyno/LethalProgression/compare/v2.2.2...v2.3.0) (2025-07-01)
 
 
