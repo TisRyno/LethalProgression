@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.3.2](https://github.com/TisRyno/LethalProgression/compare/v2.3.1...v2.3.2) (2025-07-03)
+
+
+### Bug Fixes
+
+* ensure 1s is the max cap when critical ([de7caf3](https://github.com/TisRyno/LethalProgression/commit/de7caf3724c5b16cd0e3ae9b1734e2183faa9773))
+* re-enable critical injury regen timer ([21e7b82](https://github.com/TisRyno/LethalProgression/commit/21e7b82eab3fc764621e91c1369191fdcc9f94f4))
+
 ## [2.3.1](https://github.com/TisRyno/LethalProgression/compare/v2.3.0...v2.3.1) (2025-07-03)
 
 
