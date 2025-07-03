@@ -138,8 +138,14 @@ internal class PlayerControllerBPatch
             return;
         
         Skill skill = LP_NetworkManager.xpInstance.skillList.skills[UpgradeType.HPRegen];
+
         // Then turn that into seconds. So, if hps is 0.5, then it will take 2 seconds to regen 1 health.
-        __instance.healthRegenerateTimer = 1f / skill.GetTrueValue(); // 0.05 * 5 = 0.25
+        float newRegenerateTimer = 1f / skill.GetTrueValue(); // 1 / (0.05 * 5 = 0.25) = 4
+
+        if (__instance.health < 20 && newRegenerateTimer > 1f)
+            newRegenerateTimer = 1f;
+
+        __instance.healthRegenerateTimer = newRegenerateTimer;
         __instance.health++;
 
         HUDManager.Instance.UpdateHealthUI(__instance.health, false);
