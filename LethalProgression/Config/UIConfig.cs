@@ -8,7 +8,7 @@ interface IUIConfig
     [ConfigName("Disable Level Up Notification")]
     [ConfigDescription("If you prefer to not have a notification when levelling up, set this is true")]
     [ConfigDefault(false)]
-    bool levelUpEnabled { get; }
+    bool levelUpDisabled { get; }
 
     [ConfigName("Level Up Notification Position")]
     [ConfigDescription("Options are: 1 = Top, 0 = Bottom")]

@@ -89,7 +89,7 @@ internal class HUDManagerPatch
     {
         IUIConfig uiConfig = LessShitConfigSystem.GetActive<IUIConfig>();
 
-        if (!uiConfig.levelUpEnabled)
+        if (uiConfig.levelUpDisabled)
             return;
 
         if (!levelText)
